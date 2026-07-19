@@ -103,11 +103,14 @@ def handle_if(arg_exprs, env):
     else:
         return evaluate(alternative, env)
 
-# @TODO: handle `let`
+# With `let` we expect a set of `(a 1 b 2)` bindings and a `(body)` expression
 def handle_let(arg_exprs, env):
-    print("handling let")
-    pass
+    raw_bindings, body = arg_exprs
+    names = raw_bindings[0::2]
+    vals = raw_bindings[1::2]
+    return evaluate(body, extend_env(env, zip(names, vals)))
 
+# With `quote` we just return the expression data structure unevaluated
 def handle_quote(arg_exprs, env):
     return arg_exprs[0]
 

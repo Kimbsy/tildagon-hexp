@@ -50,8 +50,12 @@ class HexpApp(App):
         tev('((fn (a) a) 400)')
         tev('((fn () 32))')
         tev('((fn (a b) (+ a a b)) 200 20)')
+        print("\n\n---------------")
+        tev('(let (a 1) a)')
+        tev('(let (a 1 b 2) (+ a b))')
+        tev('(let (a 10) (let (b 20) (+ a b)))')
         
-        # tev('(list 1 2 3)')
+        
         
 
     def update(self, delta):
