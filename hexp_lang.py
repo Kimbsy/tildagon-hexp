@@ -79,10 +79,21 @@ def read_expr_string(s):
 def is_atom(expr):
     return not isinstance(expr, list)
 
-# @TODO: implement the special forms
+def extend_env(env, bindings):
+    scoped_env = env
+    for param, arg in bindings:
+        print(type(param))
+        print(param)
+        print(type(arg))
+        print(arg)
+        scoped_env[param.name] = arg
+    return scoped_env
+
+# With a `fn` we expect a list of params, then a single `(body)` expression
 def handle_fn(arg_exprs, env):
-    print("handling fn")
-    pass
+    params, body = arg_exprs
+    # Python only allows single line lambdas !!!?!
+    return lambda arg_list: evaluate(body, extend_env(env, zip(params, arg_list)))
 
 # With an `if`, we expect a `(consequent)` and `(alternative)` body expressions, we should only evaluate one
 def handle_if(arg_exprs, env):
@@ -92,6 +103,7 @@ def handle_if(arg_exprs, env):
     else:
         return evaluate(alternative, env)
 
+# @TODO: handle `let`
 def handle_let(arg_exprs, env):
     print("handling let")
     pass
@@ -125,6 +137,7 @@ def is_special(expr):
 def is_symbol(expr):
     return isinstance(expr, Symbol)
 
+# @TODO: need to return the new env from each call?
 def evaluate(expr, env):
     if is_atom(expr):
          # lookup a symbol in the environment

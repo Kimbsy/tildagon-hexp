@@ -13,6 +13,7 @@ def equal(args):
                 return False
         return True
 
+# @TODO: need to populate the initial env
 INIT_ENV = {
     "my_var": 11,
     "+": sum,

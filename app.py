@@ -45,6 +45,12 @@ class HexpApp(App):
         tev('(quote (1 2 3))')
         tev('(quote (1 (2 3 ())))')
         tev('(quote (quote (1 2 3)))')
+        print("\n\n---------------")
+        tev('(fn (a) a)')
+        tev('((fn (a) a) 400)')
+        tev('((fn () 32))')
+        tev('((fn (a b) (+ a a b)) 200 20)')
+        
         # tev('(list 1 2 3)')
         
 
