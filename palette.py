@@ -27,4 +27,4 @@ LIGHT_PINK = parse_hex("#FAADFF")
 
 def colour(ctx, c):
     r, g, b = c
-    ctx.rgb(r, g, b)
+    return ctx.rgb(r, g, b)
