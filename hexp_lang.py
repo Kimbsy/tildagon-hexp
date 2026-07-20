@@ -106,7 +106,8 @@ def handle_if(arg_exprs, env):
 def handle_let(arg_exprs, env):
     raw_bindings, body = arg_exprs
     names = raw_bindings[0::2]
-    vals = raw_bindings[1::2]
+    # @TODO: do we not need to evaluate these one by one and extend the env each time?
+    vals = map(lambda v: evaluate(v, env), raw_bindings[1::2])
     return evaluate(body, extend_env(env, zip(names, vals)))
 
 # With `quote` we just return the expression data structure unevaluated

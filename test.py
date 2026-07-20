@@ -79,8 +79,11 @@ TESTS = [
     ['((fn (a b) (+ a a b)) 200 20)', 420],
     ['(let (a 1) a)', 1],
     ['(let (a 1 b 2) (+ a b))', 3],
+    ['(let (a 1 b a) b)', 1],
+    ['(let (a 1 b (+ a 1)) (+ a b))', 3],
     ['(let (a 10) (let (b 20) (+ a b)))', 30],
-    ['(let (a 10) (let (a 20) a))', 20]
+    ['(let (a 10) (let (a 20) a))', 20],
+    ['(let (inc (fn (n) (+ n 1))) (inc 41))', 42]
 ]
 
 run()
