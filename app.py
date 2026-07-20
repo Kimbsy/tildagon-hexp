@@ -13,50 +13,7 @@ def tev(expr):
 
 class HexpApp(App):
     def __init__(self):
-        self.foo = 42
-        print(read_expr_string("42"))
-        print(read_expr_string("'bar'"))
-        print(read_expr_string("true"))
-        v = read_expr_string("my_var")
-        print(v)
-        print(v.name)
-
-        print("\n\n--------------")
-        tev("42")
-        tev("'blah'")
-        tev('true')
-        tev('my_var')
-        tev('+')
-        print("\n\n---------------")
-        tev('(+ 11 23)')
-        tev('(+ 100 my_var)')
-        tev('(+ 1 2 3 4 5 6 7 8)')
-        tev('(+ 4 (+ 40 40))')
-        print("\n\n---------------")
-        tev('(if true 1 2)')
-        tev('(if false 1 2)')
-        tev('(if (= 5 6) 1 2)')
-        tev('(if (= 5 5) 1 2)')
-        tev('(if (= 5) 1 2)')
-        tev('(if (= 5 5 5 5) 1 2)')
-        tev('(if (= 5 5 5 6) 1 2)')
-        print("\n\n---------------")
-        tev('(quote 100)')
-        tev('(quote (1 2 3))')
-        tev('(quote (1 (2 3 ())))')
-        tev('(quote (quote (1 2 3)))')
-        print("\n\n---------------")
-        tev('(fn (a) a)')
-        tev('((fn (a) a) 400)')
-        tev('((fn () 32))')
-        tev('((fn (a b) (+ a a b)) 200 20)')
-        print("\n\n---------------")
-        tev('(let (a 1) a)')
-        tev('(let (a 1 b 2) (+ a b))')
-        tev('(let (a 10) (let (b 20) (+ a b)))')
-        
-        
-        
+        self.code = ""
 
     def update(self, delta):
         self.foo = 42

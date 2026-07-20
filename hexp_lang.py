@@ -1,7 +1,6 @@
 # Hexp language evaluator and utils
 
 import re
-from .hexp_core import INIT_ENV
 
 BOOLS = {
     "true": True,
@@ -10,13 +9,13 @@ BOOLS = {
 
 def read_atom(s):
     # is it a number
-    if re.match("\d+\.?\d*", s):
+    if re.match(r"\d+\.?\d*", s):
         return float(s)    
     # is it a boolean?
     elif s in BOOLS.keys():
         return BOOLS[s]
     # is it a string?
-    elif re.match("\'.+\'", s):
+    elif re.match(r"\'.+\'", s):
         return s[1:-1]
     # is it a special form? wrap it in a Special
     elif s in SPECIAL_FORMS.keys():
@@ -70,7 +69,7 @@ def read_list(s):
 
 def read_expr_string(s):
     # is it a list?
-    if re.match("\(.*\)", s):
+    if re.match(r"\(.*\)", s):
         return read_list(s)
     # it must be an atom
     else:
@@ -82,10 +81,10 @@ def is_atom(expr):
 def extend_env(env, bindings):
     scoped_env = env
     for param, arg in bindings:
-        print(type(param))
-        print(param)
-        print(type(arg))
-        print(arg)
+        # print(type(param))
+        # print(param)
+        # print(type(arg))
+        # print(arg)
         scoped_env[param.name] = arg
     return scoped_env
 
