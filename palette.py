@@ -1,3 +1,5 @@
+# Colours, themes and utils
+
 def parse_hex(s):
     r = int("0x" + s[1:3], 16)
     g = int("0x" + s[3:5], 16)

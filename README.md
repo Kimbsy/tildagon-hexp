@@ -2,6 +2,8 @@
 
 A programming language for the tildagon badge!
 
+@TODO: make much better docs, explain what were doing, why and where we're at
+
 ## Setup and run on badge
 
 install pipx

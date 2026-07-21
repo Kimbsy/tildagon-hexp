@@ -8,46 +8,25 @@ from .util import *
 
 class HexpApp(App):
     def __init__(self):
-        self.code = ""
-        self.result = ""
-        self.dialog = None
-        self.displayed = False
-
-    def _complete_handler(self):
-        self.code = self.dialog.text
-        self.result = str(evaluate(read_expr_string(self.code), INIT_ENV))
-        self.dialog._cleanup()
-        self.dialog = None
-
-    def _cancel_handler(self):
-        self.dialog._cleanup()
-        self.dialog = None
+        self.code = "(draw-rect (list x 0) (list 30 30) '#ff00ff')"
+        self.env = INIT_ENV | {'x': 0}
+        self.bg_colour = DARK_BLUE
 
     # @TODO: if we find an `update` function in the env, we should call it!
     def update(self, delta):
-        if not self.displayed:
-            self.displayed = True
-            self.dialog = TextDialog(
-                "Enter code plz:",
-                self,
-                masked=False,
-                on_complete=self._complete_handler,
-                on_cancel=self._cancel_handler)
+
+        # @TODO: we need a better way of updating the state? maybe?
+
+        self.env['x'] = self.env['x'] + 1
+        if self.env['x'] > 120:
+            self.env['x'] = -120
 
     # @TODO: if we find a draw function in the env we should draw it!
     def draw(self, ctx):
         clear_background(ctx)
-        colour(ctx, FOREST_GREEN)
+        colour(ctx, self.bg_colour)
         ctx.rectangle(-120, -120, 240, 240).fill()
 
-        if self.result:
-            ctx.save()
-            ctx.text_align = ctx.CENTER
-            colour(ctx, WHITE).move_to(0, -20).text(self.code)
-            ctx.move_to(0, 20).text(self.result)
-            ctx.restore()
-
-        if self.dialog:
-            self.dialog.draw(ctx)
+        evaluate(read_expr_string(self.code), self.env, ctx)
 
 __app_export__ = HexpApp

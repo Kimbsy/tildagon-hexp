@@ -15,7 +15,7 @@ def read_atom(s):
     elif s in BOOLS.keys():
         return BOOLS[s]
     # is it a string?
-    elif re.match(r"\'.+\'", s):
+    elif re.match(r"\'.*\'", s):
         return s[1:-1]
     # is it a special form? wrap it in a Special
     elif s in SPECIAL_FORMS.keys():
@@ -50,6 +50,9 @@ def read_list(s):
     sub_exprs = []
     current_expr = ""
     remaining = inner
+
+    # @TODO: we need to also keep track of if we're inside single quotes so we can have spaces in strings!!!!
+
     while len(remaining) >= 1:
         c = remaining[0]
         step = 1
@@ -126,13 +129,13 @@ class Special:
         self.name = s
         self.handler = SPECIAL_FORMS[s]
     def __repr__(self):
-        return self.name
+        return "<spf: " + self.name + " >"
 
 class Symbol:
     def __init__(self, s):
         self.name = s
     def __repr__(self):
-        return self.name
+        return "<sym: " + self.name + " >"
 
 def is_special(expr):
     return isinstance(expr, Special)
@@ -140,8 +143,13 @@ def is_special(expr):
 def is_symbol(expr):
     return isinstance(expr, Symbol)
 
+# @TODO: would be nice to do this better
+requires_ctx = ["draw-rect"]
+
+# we're gonna need a `do` special form so we can draw multiple things
+
 # @TODO: need to return the new env from each call?
-def evaluate(expr, env):
+def evaluate(expr, env, ctx=None):
     if is_atom(expr):
          # lookup a symbol in the environment
         if is_symbol(expr):
@@ -158,6 +166,8 @@ def evaluate(expr, env):
         # function application
         else:
             args = list(map(lambda arg: evaluate(arg, env), arg_exprs))
+            if is_symbol(f_exp) and f_exp.name in requires_ctx:
+                args.insert(0, ctx)
             # print("!!!!!!!1")
             # print(f)
             # print(args)
