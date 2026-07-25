@@ -4,7 +4,7 @@ from hexp_lang import evaluate, read_expr_string
 # Check if the result of evaluating something is what we expect
 def test_expected(expr, expected_output):
     parsed = read_expr_string(expr)
-    output = evaluate(parsed, INIT_ENV)
+    output = evaluate(parsed, INIT_ENV)[0]
     if output == expected_output:
         return True
     else:
@@ -12,7 +12,7 @@ def test_expected(expr, expected_output):
 
 # Just check if we can evaluate something without throwing
 def test_evaluate(expr):
-    evaluate(read_expr_string(expr), INIT_ENV)
+    evaluate(read_expr_string(expr), INIT_ENV)[0]
 
 GREEN = '\033[92m'
 RED = '\033[91m'
@@ -55,6 +55,7 @@ def run():
     
 TESTS = [
     ["42", 42],
+    ["  42  ", 42],
     ["'blah'", "blah"],
     ["'blah blah blah'", "blah blah blah"],
     ["true", True],
@@ -77,6 +78,8 @@ TESTS = [
     ["((fn (a) a) 400)", 400],
     ["((fn () 32))", 32],
     ["((fn (a b) (+ a a b)) 200 20)", 420],
+    ["((fn (a b) a b) 1 2)", 2],
+    ["((fn (a) (def b 30) (def c 40) (+ a b c)) 20)", 90],
     ["(let (a 1) a)", 1],
     ["(let (a 1 b 2) (+ a b))", 3],
     ["(let (a 1 b a) b)", 1],
@@ -84,7 +87,12 @@ TESTS = [
     ["(let (a 10) (let (b 20) (+ a b)))", 30],
     ["(let (a 10) (let (a 20) a))", 20],
     ["(let (inc (fn (n) (+ n 1))) (inc 41))", 42],
-    ["(parse-hex '#ff00ff')", [1, 0, 1]]
+    ["(let (a 1 b 2) (+ a b) 400)", 400],
+    ["(let (a 1) (def foo 41) (+ foo a))", 42],
+    ["(parse-hex '#ff00ff')", [1, 0, 1]],
+    ["(def foo 22)", None],
+    ["""(let (multi-line-works? true)
+          (= true multi-line-works?))""", True]
 ]
 
 run()

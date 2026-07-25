@@ -8,9 +8,14 @@ from .util import *
 
 class HexpApp(App):
     def __init__(self):
-        self.code = "(draw-rect (list x 0) (list 30 30) '#ff00ff')"
+        self.code = """
+        (let (a 1)
+          (draw-rect (list x 0) (list 30 30) '#ff00ff')
+          (draw-rect (list 0 x) (list 30 30) '#00ffff'))
+        """
         self.env = INIT_ENV | {'x': 0}
         self.bg_colour = DARK_BLUE
+
 
     # @TODO: if we find an `update` function in the env, we should call it!
     def update(self, delta):
