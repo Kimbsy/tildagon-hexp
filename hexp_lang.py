@@ -24,17 +24,56 @@ def read_atom(s):
     # otherwise it's a variable name, wrap it in a Symbol
     else:
         return Symbol(s)
+
+# Our map is a pair of braces {} with an even number of space-separated expressions inside. We should track the braces/parens/quotes and split when we find a space without being in any other expression
+def read_map(s):
+    remaining = s[1:-1]
+    sub_exprs = []
+    # parens, braces and quote levels
+    p = 0
+    b = 0
+    q = 0
+    current = ""
+    # @TODO: we should probably ignore ps and bs if we're in an open q? otherwise you couldn't represent the string ':)'
+    while len(remaining) > 0:
+        c = remaining[0]
+        if c == "(":
+            p = p + 1
+        elif c == ")":
+            p = p - 1
+        elif c == "{":
+            b = b + 1
+        elif c == "}":
+            b = b - 1
+        elif c == "'" and q == 0:
+            q = q + 1
+        elif c == "'" and q == 1:
+            q = q - 1
+        elif p == 0 and b == 0 and q == 0 and c == " ":
+            sub_exprs.append(current)
+            current = ""
+        current = current + c
+        remaining = remaining[1:]
+    if len(current) > 0:
+        sub_exprs.append(current)
+    
+    key_exprs = sub_exprs[0::2]
+    val_exprs = sub_exprs[1::2]
+    keys = map(lambda k: read_expr_string(k), key_exprs)
+    vals = map(lambda v: read_expr_string(v), val_exprs)
+    return dict(zip(keys, vals))
+
     
 # we have a string which starts with an open paren, we want to take chars till it matching close, then return this sublist along with the remaining (or maybe just this sublist)
-def take_sublist(s):
-    out = "("
+def take_sublist(s, opening, closing):
+    out = opening
     remaining = s[1:]
     level = 1
     while level > 0:
         c = remaining[0]
-        if (c == ")"):
+        if c == closing:
             level = level - 1
-        elif (c == "("):
+        elif c == opening:
             level = level + 1
         remaining = remaining[1:]
         out = out + c
@@ -57,25 +96,32 @@ def read_list(s):
     while len(remaining) >= 1:
         c = remaining[0]
         step = 1
-        if (c == "("):
-            sublist = take_sublist(remaining)
+        if c == "(":
+            sublist = take_sublist(remaining, "(", ")")
             step = len(sublist)
-            sub_exprs.append(read_list(sublist))
-        elif (c == " ") and len(current_expr) > 0:
-            sub_exprs.append(read_atom(current_expr))
+            sub_exprs.append(read_expr_string(sublist))
+        elif c == "{":
+            sublist = take_sublist(remaining, "{", "}")
+            step = len(sublist)
+            sub_exprs.append(read_expr_string(sublist))
+        elif c == " " and len(current_expr) > 0:
+            sub_exprs.append(read_expr_string(current_expr))
             current_expr = ""
-        elif (c != " "):
+        elif c != " ":
             current_expr = current_expr + c
         remaining = remaining[step:]
     if len(current_expr) > 0:
-        sub_exprs.append(read_atom(current_expr))
+        sub_exprs.append(read_expr_string(current_expr))
     return sub_exprs
 
 def read_expr_string(s):
-    s = s.replace('\n', ' ').strip()
+    s = s.replace('\n', ' ').replace(',', ' ').strip()
     # is it a list?
     if re.match(r"\(.*\)", s):
         return read_list(s)
+    # is it a map?
+    elif re.match(r"\{.*\}", s):
+        return read_map(s)
     # it must be an atom
     else:
         return read_atom(s)

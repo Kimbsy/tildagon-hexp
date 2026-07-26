@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import time
 from hexp_core import INIT_ENV
 from hexp_lang import evaluate, read_expr_string
 
@@ -21,6 +22,7 @@ RED = '\033[91m'
 ENDC = '\033[0m'
 
 def run():
+    start_ms = time.time() * 1000
     failures = []
     print(GREEN, end='')
     for t in TESTS:
@@ -54,6 +56,7 @@ def run():
                 print("Expected: " + str(expected_output))
     else:
         print("All passed " + GREEN + "[OK]" + ENDC)
+    print("{:.2f}".format(((time.time() * 1000) - start_ms)) + "ms")
     
 TESTS = [
     ["42", 42],
@@ -92,9 +95,32 @@ TESTS = [
     ["(let (a 1 b 2) (+ a b) 400)", 400],
     ["(let (a 1) (def foo 41) (+ foo a))", 42],
     ["(parse-hex '#ff00ff')", [1, 0, 1]],
+    ["(list)", []],
+    ["(list 1 2 3)", [1, 2, 3]],
+    ["(list 1 (list 2) (list (list 3)))", [1, [2], [[3]]]],
+    ["(first (list 1 2 3))", 1],
+    ["(last (list 1 2 3))", 3],
+    ["(rest (list 1 2 3))", [2, 3]],
+    ["(rest (list 1))", []],
+    ["(rest (list))", []],
+    ["(nth (list 1 2 3) 1)", 2],
     ["(def foo 22)", None],
     ["""(let (multi-line-works? true)
-          (= true multi-line-works?))""", True]
+          (= true multi-line-works?))""", True],
+    ["{1 2}", {1: 2}],
+    ["{'foo' 'bar'}", {'foo': 'bar'}],
+    ["{'foo' {'bar' {'baz' 33}}}", {'foo': {'bar': {'baz': 33}}}],
+    ["{'foo' 1 'bar' 2}", {'foo': 1, 'bar': 2}],
+    ["(get {'foo' 1 'bar' 2} 'bar')", 2],
+    ["(get (get {'foo' {'bar' {'baz' 33}}} 'foo') 'bar')", {'baz': 33}],
+    ["(put {} 'foo' 1)", {'foo': 1}],
+    ["(put {'foo' 1} 'bar' 2)", {'foo': 1, 'bar': 2}],
+    ["(put {'foo' 1} 'foo' 2)", {'foo': 2}],
+    ["(put {'foo' 1} 'bar' {'baz' 45})", {'foo': 1, 'bar': {'baz': 45}}],
+    ["(update {'x' 10} 'x' (fn (x) (- x 1)))", {'x': 9}],
+    ["""(let (inc (fn (n) (+ n 1)))
+          (update {'x' 10} 'x' inc))""", {'x': 11}],
+    
 ]
 
 run()

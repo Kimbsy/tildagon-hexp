@@ -8,4 +8,5 @@ session = Session(INIT_ENV, read_expr_string, evaluate)
 
 while True:
     expr = input("> ")
-    print(session.evaluate(expr))
+    if len(expr) > 0:
+        print(session.evaluate(expr))

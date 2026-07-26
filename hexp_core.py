@@ -60,6 +60,26 @@ def less_than(args):
                 return False
         return True
 
+def nth(args):
+    coll, n = args
+    return coll[int(n)]
+
+def get(args):
+    hashmap, key = args
+    return hashmap[key]
+
+def put(args):
+    hashmap, key, val = args
+    hashmap[key] = val
+    return hashmap
+
+def update(args):
+    hashmap, key, f = args
+    old_v = hashmap[key]
+    new_v = f([old_v])
+    hashmap[key] = new_v
+    return hashmap
+
 def background(args):
     ctx, colour_hex = args
     colour(ctx, parse_hex(colour_hex)).rectangle(-120, -120, 240, 240).fill()
@@ -72,15 +92,28 @@ def draw_rect(args):
 
 # @TODO: continue expanding initial env
 INIT_ENV = {
-    "list": lambda x: x,
+    "list": lambda args: args,
+    "first": lambda args: args[0][0],
+    "last": lambda args: args[0][-1],
+    "rest": lambda args: args[0][1:],
+    "nth": nth,
+    "get": get,
+    "put": put,
+    "update": update,
     "+": sum,
     "-": minus,
     "=": equal,
     "<": less_than,
-    "draw-rect": draw_rect,
     "parse-hex": lambda s: parse_hex(s[0]),
+
+    # side effecting functions
     "print": lambda x: print(x[0]),
+
+    # ctx graphcis functions
     "background": background,
+    "draw-rect": draw_rect,
+
+    # Tildagon app lifecycle functions
     "hexp-update": None,
     "hexp-draw": None
 }
