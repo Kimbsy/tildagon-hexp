@@ -70,6 +70,7 @@ def draw_rect(args):
     w, h = size
     colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).fill()
 
+# @TODO: continue expanding initial env
 INIT_ENV = {
     "list": lambda x: x,
     "+": sum,

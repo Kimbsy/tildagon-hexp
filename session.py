@@ -9,6 +9,7 @@ class Session:
         self.read_fn = read_fn
         self.eval_fn = eval_fn
 
+    # @TODO: when we get an exception we should print it, then return None and the previous env
     def evaluate(self, expr):
         parsed = self.read_fn(expr)
         res, env = self.eval_fn(parsed, self.env, self.ctx)

@@ -32,6 +32,6 @@ class HexpApp(App):
     def draw(self, ctx):
         self.session.draw()
 
-    # @TODO: we need to exit the app when we hit back, I guess we _could_ try and write new version of each of the button handling methods an app can override?
+    # @TODO: we need to exit the app when we hit the back button, I guess we _could_ try and write new version of each of the button handling methods an app can override?
 
 __app_export__ = HexpApp
