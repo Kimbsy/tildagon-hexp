@@ -129,7 +129,7 @@ def handle_quote(arg_exprs, env, ctx):
 # With def we expect a `name` symbol, then a body to evaluate to a value, we return an updated env
 def handle_def(arg_exprs, env, ctx):
     name_sym, body_expr = arg_exprs
-    return (None, extend_env(env, zip([name_sym], [body_expr])))
+    return (None, extend_env(env, zip([name_sym], [evaluate(body_expr, env, ctx)[0]])))
 
 SPECIAL_FORMS = {
     "fn": handle_fn,
