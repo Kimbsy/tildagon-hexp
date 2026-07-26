@@ -10,34 +10,28 @@ from .util import *
 
 class HexpApp(App):
     def __init__(self):
+        self.bg_colour = DARK_BLUE
         self.session = Session(INIT_ENV, read_expr_string, evaluate, get_ctx())
-        print(self.session.evaluate("(def thingy 300)"))
-        print(self.session.evaluate("(def whatsit 99)"))
-        print(self.session.evaluate("(+ thingy whatsit)"))
-    #     self.code = """
-    #     (let (a 1)
-    #       (draw-rect (list x 0) (list 30 30) '#ff00ff')
-    #       (draw-rect (list 0 x) (list 30 30) '#00ffff'))
-    #     """
-    #     self.env = INIT_ENV | {'x': 0}
-    #     self.bg_colour = DARK_BLUE
+        self.session.evaluate("(def x 0)")
+        self.session.evaluate("(def inc (fn (n) (+ n 1)))")
+        self.session.evaluate("""
+        (def hexp-update
+          (fn ()
+            (if (< x 120)
+               (def x (inc x))
+               (def x (- 0 120)))))""")
+        self.session.evaluate("""
+        (def hexp-draw
+          (fn ()
+            (background '#002b36')
+            (draw-rect (list x 0) (list 30 30) '#ff00ff')))""")
 
+    def update(self, delta):
+        self.session.update()
 
-    # # @TODO: if we find an `update` function in the env, we should call it!
-    # def update(self, delta):
+    def draw(self, ctx):
+        self.session.draw()
 
-    #     # @TODO: we need a better way of updating the state? maybe?
-
-    #     self.env['x'] = self.env['x'] + 1
-    #     if self.env['x'] > 120:
-    #         self.env['x'] = -120
-
-    # # @TODO: if we find a draw function in the env we should draw it!
-    # def draw(self, ctx):
-    #     clear_background(ctx)
-    #     colour(ctx, self.bg_colour)
-    #     ctx.rectangle(-120, -120, 240, 240).fill()
-
-    #     evaluate(read_expr_string(self.code), self.env, ctx)
+    # @TODO: we need to exit the app when we hit back, I guess we _could_ try and write new version of each of the button handling methods an app can override?
 
 __app_export__ = HexpApp

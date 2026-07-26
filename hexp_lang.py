@@ -8,6 +8,7 @@ BOOLS = {
 }
 
 def read_atom(s):
+    # @TODO: handle negative number literals
     # is it a number
     if re.match(r"\d+\.?\d*", s):
         return float(s)    
@@ -158,10 +159,12 @@ def is_special(expr):
 def is_symbol(expr):
     return isinstance(expr, Symbol)
 
-# @TODO: would be nice to do this better
-requires_ctx = ["draw-rect"]
+# @TODO: might be a nicer way to know when to inject ctx, at a minimum this feels like ti should live in core, with the function definitions
+REQUIRES_CTX = [
+    "background",
+    "draw-rect"
+]
 
-# @TODO: need to return the new env from each call?
 def evaluate(expr, env, ctx=None):
     if is_atom(expr):
          # lookup a symbol in the environment
@@ -179,7 +182,7 @@ def evaluate(expr, env, ctx=None):
         # function application
         else:
             args = list(map(lambda arg: evaluate(arg, env, ctx)[0], arg_exprs))
-            if is_symbol(f_exp) and f_exp.name in requires_ctx:
+            if is_symbol(f_exp) and f_exp.name in REQUIRES_CTX:
                 args.insert(0, ctx)
             # print("!!!!!!!1")
             # print(f)

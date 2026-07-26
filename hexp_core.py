@@ -31,6 +31,11 @@ def colour(ctx, c):
     r, g, b = c
     return ctx.rgb(r, g, b)
 
+# @TODO: make this variadic, not binary
+def minus(args):
+    a, b = args
+    return a - b
+
 def equal(args):
     if len(args) == 1:
         return True
@@ -44,6 +49,21 @@ def equal(args):
                 return False
         return True
 
+def less_than(args):
+    if len(args) == 2:
+        a, b = args
+        return a < b
+    else:
+        a = args[0]
+        for val in args[1:]:
+            if val >= a:
+                return False
+        return True
+
+def background(args):
+    ctx, colour_hex = args
+    colour(ctx, parse_hex(colour_hex)).rectangle(-120, -120, 240, 240).fill()
+
 def draw_rect(args):
     ctx, pos, size, colour_hex = args
     x, y = pos
@@ -53,9 +73,13 @@ def draw_rect(args):
 INIT_ENV = {
     "list": lambda x: x,
     "+": sum,
+    "-": minus,
     "=": equal,
+    "<": less_than,
     "draw-rect": draw_rect,
     "parse-hex": lambda s: parse_hex(s[0]),
     "print": lambda x: print(x[0]),
-    "hexp-update": None
+    "background": background,
+    "hexp-update": None,
+    "hexp-draw": None
 }

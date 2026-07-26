@@ -15,5 +15,15 @@ class Session:
         self.env = env
         return res
 
-    def currnt_env(self):
+    def current_env(self):
         return self.env
+
+    def update(self):
+        f = self.env['hexp-update']
+        if f:
+            self.evaluate("(hexp-update)")
+
+    def draw(self):
+        f = self.env['hexp-draw']
+        if f:
+            self.evaluate("(hexp-draw)")
