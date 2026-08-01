@@ -114,7 +114,11 @@ def read_list(s):
         sub_exprs.append(read_expr_string(current_expr))
     return sub_exprs
 
+def remove_comments(s):
+    return re.sub(r";;.*", "", s)
+
 def read_expr_string(s):
+    s = remove_comments(s)
     s = s.replace('\n', ' ').replace(',', ' ').strip()
     # is it a list?
     if re.match(r"\(.*\)", s):
@@ -176,7 +180,8 @@ def handle_quote(arg_exprs, env, ctx):
 # With def we expect a `name` symbol, then a body to evaluate to a value, we return an updated env
 def handle_def(arg_exprs, env, ctx):
     name_sym, body_expr = arg_exprs
-    return (None, extend_env(env, zip([name_sym], [evaluate(body_expr, env, ctx)[0]])))
+    res = evaluate(body_expr, env, ctx)[0]
+    return (res, extend_env(env, zip([name_sym], [res])))
 
 SPECIAL_FORMS = {
     "fn": handle_fn,

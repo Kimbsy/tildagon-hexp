@@ -104,9 +104,12 @@ TESTS = [
     ["(rest (list 1))", []],
     ["(rest (list))", []],
     ["(nth (list 1 2 3) 1)", 2],
-    ["(def foo 22)", None],
+    ["(def foo 22)", 22],
     ["""(let (multi-line-works? true)
           (= true multi-line-works?))""", True],
+    ["""(+ 1
+    ;; this is a comment
+     2)""", 3],
     ["{1 2}", {1: 2}],
     ["{'foo' 'bar'}", {'foo': 'bar'}],
     ["{'foo' {'bar' {'baz' 33}}}", {'foo': {'bar': {'baz': 33}}}],
