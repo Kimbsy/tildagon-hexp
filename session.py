@@ -12,11 +12,12 @@ class Session:
         self.on_error_cb = on_error_cb
         self.history = []
 
-    def evaluate(self, expr):
+    def evaluate(self, expr, append_history=True):
         try:
             parsed = self.read_fn(expr)
             res, env = self.eval_fn(parsed, self.env, self.ctx)
-            self.history.insert(0, [expr, str(res)])
+            if append_history:
+                self.history.insert(0, [expr, str(res)])
             self.env = env
             return res
         except Exception as e:
@@ -29,9 +30,9 @@ class Session:
     def update(self):
         f = self.env['hexp-update']
         if f:
-            self.evaluate("(hexp-update)")
+            self.evaluate("(hexp-update)", append_history=False)
 
     def draw(self):
         f = self.env['hexp-draw']
         if f:
-            self.evaluate("(hexp-draw)")
+            self.evaluate("(hexp-draw)", append_history=False)

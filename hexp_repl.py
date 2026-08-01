@@ -54,7 +54,7 @@ class HexpRepl(TextDialog):
         ctx.font_size = label_font_size
         ctx.text_align = ctx.LEFT
         ctx.text_baseline = ctx.BOTTOM
-        for idx, h in  enumerate(self.session.history):
+        for idx, h in  enumerate(self.session.history[:5]):
             self.draw_history_item(ctx, h, idx)
 
     def draw_input(self, ctx):

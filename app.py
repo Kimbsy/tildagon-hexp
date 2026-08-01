@@ -53,7 +53,7 @@ class HexpApp(App):
         self.notification = Notification(repr(e))
 
     def main_menu_select_handler(self, item, idx):
-        if self.state == MAIN_MENU:            
+        if self.state == MAIN_MENU:
             self.state = REPL
 
     def main_menu_back_handler(self):
@@ -63,7 +63,7 @@ class HexpApp(App):
             self.minimise()
 
     def repl_complete_callback(self):
-        self.repl = None        
+        self.repl = None
 
     def repl_cancel_callback(self):
         self.repl = None
@@ -89,7 +89,6 @@ class HexpApp(App):
         if self.notification:
             self.notification.update(delta)
 
-
     def draw(self, ctx):
         clear_background(ctx)
 
@@ -102,7 +101,7 @@ class HexpApp(App):
         #     pass
         # elif self.state == SAVE_PROGRAM:
         #     pass
-        
+
         # if `hexp-draw` is defined, invoke it
         self.session.draw()
 

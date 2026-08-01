@@ -15,6 +15,32 @@ As far as I can tell it is the first full programming language written specifica
 
 ## The Hexp REPL
 
+The simplest way to get writing Hexp is using the built-in REPL of the Hexp IDE app. Luanch the IDE app and select REPL from the main menu.
+
+From here you can evaluate Hexp expressions in an interactive session.
+
+```Clojure
+;; numbers evaluate to themselves
+42
+=> 42
+
+;; so do strings
+'hello'
+=> hello
+
+;; invoke a function by wrapping it in parens with it's args
+(+ 1 2)
+=> 3
+
+;; define a variable with `def`
+(def foo 67)
+=> 67
+
+;; variables evaluate to their values
+foo
+=> 67
+```
+
 ## Saving and loading programs
 
 ## Writing a Tildagon OS badge app in Hexp
@@ -26,6 +52,8 @@ If you write a program which defines the `hexp-update` and `hexp-draw` functions
 So as soon as your program is evaluated Hexp will be able to draw to the screen and update it's own internal state every frame.
 
 I don't think we'll be running Doom anytime soon, but a bouncing DVD logo? That's absolutely achievable.
+
+Check out the `examples/draw-square.hxp` program (type it into the repl if you like!) for an example.
 
 ## Setup and run on badge for local development
 
