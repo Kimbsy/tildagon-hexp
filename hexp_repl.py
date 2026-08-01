@@ -17,6 +17,8 @@ THEMES = {
     }
 }
 
+# @TODO: remove character selection stuff entirely, it still prints in the console
+
 class HexpRepl(TextDialog):
     def __init__(self, app, session, app_on_complete_cb, app_on_cancel_cb):
         super().__init__(
@@ -25,18 +27,25 @@ class HexpRepl(TextDialog):
             on_complete=self._on_complete,
             on_cancel=self._on_cancel
         )
+        self.app = app
         self.theme = THEMES["dark"]
         self.session = session
         self.app_on_complete_cb = app_on_complete_cb
         self.app_on_cancel_cb = app_on_cancel_cb
 
     def _on_complete(self):
+        print("repl-complete")
+        if not self.app.state == 'REPL':
+            return
         expr = self.text
         res = self.session.evaluate(expr)
         self._cleanup()
         self.app_on_complete_cb()
 
     def _on_cancel(self):
+        print("repl-cancel")
+        if not self.app.state == 'REPL':
+            return
         self._cleanup()
         self.app_on_cancel_cb()
 
