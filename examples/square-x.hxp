@@ -17,5 +17,5 @@
 (def hexp-draw
   (fn ()
     ;; Set the background to a dark blue, then draw a magenta square at the `[x 0]` coordinate
-    (background '#002b36')
+    ;; (background '#002b36')
     (draw-rect (list x 0) (list 30 30) '#ff00ff')))

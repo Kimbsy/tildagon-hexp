@@ -84,6 +84,13 @@ copy app files over and connect to the badge
 ./upload.sh
 ```
 
+copy example programs over
+
+``` shell
+mpremote mkdir apps/hexp/prog
+mpremote cp examples/*.hxp :/apps/hexp/prog/
+```
+
 `ctrl-d` to reboot while connected
 
 > [!CAUTION]

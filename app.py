@@ -5,7 +5,7 @@ from app_components import Menu, Notification, TextDialog, clear_background
 from display import get_ctx
 from typing import Literal
 from .hexp_core import INIT_ENV
-from .hexp_lang import evaluate, read_expr_string
+from .hexp_lang import evaluate, read_expr_string, remove_comments
 from .hexp_repl import HexpRepl
 from .palette import *
 from .session import *
@@ -87,10 +87,12 @@ class HexpApp(App):
         else:
             self.minimise()
 
-    # @TODO: THIS THIS THIS!!!!
     def load_menu_select_handler(self, item, idx):
-        print("LOAD")
-        print(item)
+        f = open(PROG_STORE_PATH + "/" + item)
+        prog = f.read()
+        exprs = prog.split("\n\n")
+        for expr in exprs:
+            self.session.evaluate(expr)
 
     def _back_to_main(self):
         self.menu.menu_items = MAIN_MENU_OPTIONS

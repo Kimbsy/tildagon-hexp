@@ -114,8 +114,15 @@ def read_list(s):
         sub_exprs.append(read_expr_string(current_expr))
     return sub_exprs
 
+# MicroPython regex sucks, we can't just re.sub(r";;.*", "", s)
+# So we split by lines, then remove comment lines, then patch it back together
 def remove_comments(s):
-    return re.sub(r";;.*", "", s)
+    lines = s.split("\n")
+    out = ""
+    for line in lines:
+        if not line.strip().startswith(";;"):
+            out = out + line
+    return out
 
 def read_expr_string(s):
     s = remove_comments(s)
@@ -136,10 +143,6 @@ def is_atom(expr):
 def extend_env(env, bindings):
     scoped_env = env
     for param, arg in bindings:
-        # print(type(param))
-        # print(param)
-        # print(type(arg))
-        # print(arg)
         scoped_env[param.name] = arg
     return scoped_env
 

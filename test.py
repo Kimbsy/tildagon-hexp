@@ -110,6 +110,8 @@ TESTS = [
     ["""(+ 1
     ;; this is a comment
      2)""", 3],
+    [""";; this is a comment
+    (+ 1 2)""", 3],
     ["{1 2}", {1: 2}],
     ["{'foo' 'bar'}", {'foo': 'bar'}],
     ["{'foo' {'bar' {'baz' 33}}}", {'foo': {'bar': {'baz': 33}}}],

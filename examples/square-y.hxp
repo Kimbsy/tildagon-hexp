@@ -1,0 +1,21 @@
+;; the position of the square
+(def y 0)
+
+;; an increment function
+(def inc (fn (n) (+ n 1)))
+
+;; defining `hexp-update`, it will be called every frame
+(def hexp-update
+  ;; we increment y and if it goes off the screen we put it back to the other side
+  (fn ()
+    (if (< y 120)
+      (def y (inc y))
+      ;; @TODO: support negative numbers!
+      (def y (- 0 120)))))
+
+;; defining `hexp-draw`, will be called every frame
+(def hexp-draw
+  (fn ()
+    ;; Set the background to a dark blue, then draw a magenta square at the `[0 y]` coordinate
+    ;; (background '#002b36')
+    (draw-rect (list 0 y) (list 30 30) '#00ffff')))

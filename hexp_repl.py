@@ -56,7 +56,7 @@ class HexpRepl(TextDialog):
         ctx.move_to(-100, int(y_off)).text(">")
         ctx.move_to(-100, int(y_off) + int(label_font_size)).text(">>")
         colour(ctx, self.theme["text"])
-        ctx.move_to(-70, int(y_off)).text(expr)
+        ctx.move_to(-70, int(y_off)).text(expr.replace('\n', ' '))
         ctx.move_to(-70, int(y_off) + int(label_font_size)).text(res)
 
     def draw_history(self, ctx):
