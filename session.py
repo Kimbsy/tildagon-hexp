@@ -17,7 +17,7 @@ class Session:
             parsed = self.read_fn(expr)
             res, env = self.eval_fn(parsed, self.env, self.ctx)
             if append_history:
-                self.history.insert(0, [expr, str(res)])
+                self.history.append([expr, str(res)])
             self.env = env
             return res
         except Exception as e:
