@@ -1,4 +1,4 @@
-;; the position of the square
+;; the position of the squares
 (def x 0)
 
 ;; an increment function
@@ -10,12 +10,12 @@
   (fn ()
     (if (< x 120)
       (def x (inc x))
-      ;; @TODO: support negative numbers!
-      (def x (- 0 120)))))
+      ;; @TODO: support negative numbers literals!
+      (def x (- 120)))))
 
 ;; defining `hexp-draw`, will be called every frame
 (def hexp-draw
   (fn ()
-    ;; Set the background to a dark blue, then draw a magenta square at the `[x 0]` coordinate
-    ;; (background '#002b36')
-    (draw-rect (list x 0) (list 30 30) '#ff00ff')))
+    ;; draw magenta squares based on the `x` coordinate
+    (draw-rect (list x 0) (list 30 30) '#ff00ff')
+    (fill-rect (list (- x) 0) (list 30 30) '#ff00ff')))

@@ -78,8 +78,12 @@ class HexpApp(App):
             self.repl_cancel_callback
         )
 
-    def session_error_handler(self, e):
-        self.notification = Notification(repr(e))
+    def session_error_handler(self, expr, error):
+        print(repr(expr))
+        print(repr(error))
+        print(self.session.env)
+        print(self.session.read_fn)
+        self.notification = Notification(repr(error))
         eventbus.emit(EmoteNegativeEvent())
 
     def main_menu_select_handler(self, item, idx):
@@ -113,12 +117,14 @@ class HexpApp(App):
             return
         f = open(PROG_STORE_PATH + "/" + item)
         prog = f.read()
+        print(prog)
         exprs = prog.split("\n\n")
         for expr in exprs:
             if len(expr.strip()) > 0:
                 self.session.evaluate(expr)
-        self.notification = Notification("Loaded")
-        eventbus.emit(EmotePositiveEvent())
+        self.notification = Notification("Loaded: " + item)
+        # Don't emit a positive emote, in case the program crashes immediately, it gets mixed up with the negative emote from a failed evaluate
+        # eventbus.emit(EmotePositiveEvent())
 
     def _back_to_main(self):
         self.menu.menu_items = MAIN_MENU_OPTIONS
@@ -234,7 +240,5 @@ class HexpApp(App):
         # draw any error notifications
         if self.notification:
             self.notification.draw(ctx)
-
-    # @TODO: we need to exit the app when we hit the back button, I guess we _could_ try and write new version of each of the button handling methods an app can override?
 
 __app_export__ = HexpApp

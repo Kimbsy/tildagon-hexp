@@ -1,4 +1,4 @@
 ;; defining `hexp-draw`, will be called every frame
 (def hexp-draw
   (fn ()
-    (draw-text (list (- 30) -60) 'helloWorld!' '#ff0000')))
+    (draw-text (list (- 30) (- 35)) 'helloWorld!' '#ff0000')))

@@ -1,6 +1,6 @@
 [app]
 # The name of your app as displayed in the menu
-name = "Hexp"
+name = "HexpLang"
 
 # The submenu where your app should appear. See "App categories" above.
 # One of: "Badge", "Music", "Media", "Apps", "Games", "Background", "Pattern"
@@ -37,4 +37,4 @@ description = "A custom programming language written to run on the Tildagon badg
 # increased, we interpret this as a new version being released.
 #
 # Version number must be an integer!
-version = "0.0.1"
+version = "0.0.2"

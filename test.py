@@ -109,6 +109,8 @@ TESTS = [
     ["(rest (list 1))", []],
     ["(rest (list))", []],
     ["(nth (list 1 2 3) 1)", 2],
+    ["(rand-nth (list 1))", 1],
+    ["(rand-nth (list 'foo'))", "foo"],
     ["(def foo 22)", 22],
     ["""(let (multi-line-works? true)
           (= true multi-line-works?))""", True],
@@ -130,6 +132,10 @@ TESTS = [
     ["(update {'x' 10} 'x' (fn (x) (- x 1)))", {'x': 9}],
     ["""(let (inc (fn (n) (+ n 1)))
           (update {'x' 10} 'x' inc))""", {'x': 11}],
+    ["(or true true)", True],
+    ["(or true false)", True],
+    ["(or false true)", True],
+    ["(or false false)", False],
     
 ]
 

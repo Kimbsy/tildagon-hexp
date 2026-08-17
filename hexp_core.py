@@ -1,5 +1,7 @@
 # Initial environment and core functions
 
+from random import randint
+
 def parse_hex(s):
     r = int("0x" + s[1:3], 16)
     g = int("0x" + s[3:5], 16)
@@ -27,9 +29,26 @@ BROWN = parse_hex("#504136")
 DARK_PINK = parse_hex("#EF0AFF")
 LIGHT_PINK = parse_hex("#FAADFF")
 
+def hexp_or(args):
+    a, b = args
+    return a or b
+
+# other booleans
+
 def colour(ctx, c):
     r, g, b = c
     return ctx.rgb(r, g, b)
+
+def multiply(args):
+    if len(args) == 1:
+        return args[0]
+    elif len(args) == 2:
+        return args[0] * args[1]
+    else:
+        a = args[0]
+        for val in args[1:]:
+            a = a * val
+        return a
 
 def minus(args):
     if len(args) == 1:
@@ -77,6 +96,9 @@ def concat(args):
 def nth(args):
     coll, n = args
     return coll[int(n)]
+
+def rand_nth(args):
+    return args[0][randint(0, len(args[0]) - 1)]
 
 # map
 
@@ -149,10 +171,10 @@ def draw_text(args):
     colour(ctx, parse_hex(colour_hex))
     ctx.move_to(x, y).text(content)
     ctx.restore()
-
     
 # @TODO: continue expanding initial env
 INIT_ENV = {
+    "or": hexp_or,
     "list": lambda args: args,
     "append": append,
     "concat": concat,
@@ -160,11 +182,13 @@ INIT_ENV = {
     "last": lambda args: args[0][-1],
     "rest": lambda args: args[0][1:],
     "nth": nth,
+    "rand-nth": rand_nth,
     "get": get,
     "put": put,
     "update": update,
     "+": sum,
     "-": minus,
+    "*": multiply,
     "=": equal,
     "<": less_than,
     "parse-hex": lambda s: parse_hex(s[0]),

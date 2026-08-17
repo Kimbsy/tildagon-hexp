@@ -124,6 +124,8 @@ def remove_comments(s):
             out = out + line
     return out
 
+# We need to handle reading whole files and multi-line input better, we should parse a file while tracking parens, not _require_ two newlines between expressions
+
 def read_expr_string(s):
     s = remove_comments(s)
     s = s.replace('\n', ' ').replace(',', ' ').strip()

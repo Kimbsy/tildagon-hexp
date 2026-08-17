@@ -21,7 +21,7 @@ class Session:
             self.env = env
             return res
         except Exception as e:
-            self.on_error_cb(e)
+            self.on_error_cb(expr, e)
             return None
 
     def current_env(self):

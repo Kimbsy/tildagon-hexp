@@ -87,13 +87,11 @@ copy app files over and connect to the badge
 copy example programs over
 
 ``` shell
-mpremote mkdir apps/hexp/prog
-mpremote cp examples/*.hxp :/apps/hexp/prog/
+mpremote mkdir apps/Kimbsy_tildagon_hexp/prog
+mpremote cp examples/*.hxp :/apps/Kimbsy_tildagon_hexp/prog/
 ```
 
 `ctrl-d` to reboot while connected
 
 > [!CAUTION]
 > Note to self: Update app version in `tildagon.toml` before we make a release!
-
-@TODO: we should make it easy for people to test and write large programs from their laptop and run them on the badge.

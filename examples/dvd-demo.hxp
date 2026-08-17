@@ -1,0 +1,61 @@
+;; the position of the logo
+(def pos (list 0 40))
+
+;; the velocity of the logo
+(def vel (list 3 3))
+
+;; nice bright colours
+(def colours
+  (list '#ff0000'
+        '#00ff00'
+        '#0000ff'
+        '#ffff00'
+        '#ff00ff'
+        '#00ffff'))
+
+(def colour (rand-nth colours))
+
+(def r 100)
+
+;; add two vectors together
+(def add-v
+  (fn (v1 v2)
+    (let (x1 (first v1)
+          y1 (last v1)
+          x2 (first v2)
+          y2 (last v2))
+      (list (+ x1 x2)
+            (+ y1 y2)))))
+
+(def update-vx
+  (fn (vx)
+    (if (or (< r (first pos))
+            (< (first pos) (- r)))
+      (let (vx (- (first vel)))
+        (def colour (rand-nth colours))
+        vx)
+      (first vel))))
+
+(def update-vy
+  (fn (vy)
+    (if (or (< r (last pos))
+            (< (last pos) (- r)))
+      (let (vy  (- (last vel)))
+        (def colour (rand-nth colours))
+        vy)
+      (last vel))))
+
+;; defining `hexp-update`, it will be called every frame
+(def hexp-update
+  (fn ()
+    (def pos (add-v pos vel))
+    (def vel (list (update-vx (first vel))
+                   (update-vy (last vel))))))
+
+;; defining `hexp-draw`, will be called every frame
+(def hexp-draw
+  (fn ()
+    ;; set the background to a dark blue
+    (background '#002b36')
+    ;; draw the DVD logo in the current colour
+    (draw-text pos 'DVD' colour)))
