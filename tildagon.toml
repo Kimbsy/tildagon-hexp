@@ -1,6 +1,6 @@
 [app]
 # The name of your app as displayed in the menu
-name = "Hexp IDE"
+name = "Hexp"
 
 # The submenu where your app should appear. See "App categories" above.
 # One of: "Badge", "Music", "Media", "Apps", "Games", "Background", "Pattern"

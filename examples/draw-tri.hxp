@@ -1,0 +1,5 @@
+;; defining `hexp-draw`, will be called every frame
+(def hexp-draw
+  (fn ()
+    (draw-tri (list (list 0 0) (list 30 0) (list 20 30)) '#ffffff')
+    (fill-tri (list (list 40 40) (list 70 40) (list 60 70)) '#ff0000')))

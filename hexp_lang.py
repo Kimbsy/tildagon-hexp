@@ -216,7 +216,11 @@ def is_symbol(expr):
 # @TODO: might be a nicer way to know when to inject ctx, at a minimum this feels like ti should live in core, with the function definitions
 REQUIRES_CTX = [
     "background",
-    "draw-rect"
+    "draw-rect",
+    "fill-rect",
+    "draw-tri",
+    "fill-tri",
+    "draw-text"
 ]
 
 def evaluate(expr, env, ctx=None):

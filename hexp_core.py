@@ -31,10 +31,16 @@ def colour(ctx, c):
     r, g, b = c
     return ctx.rgb(r, g, b)
 
-# @TODO: make this variadic, not binary
 def minus(args):
-    a, b = args
-    return a - b
+    if len(args) == 1:
+        return 0 - args[0]
+    elif len(args) == 2:
+        return args[0] - args[1]
+    else:
+        a = args[0]
+        for val in args[1:]:
+            a = a - val
+        return a
 
 def equal(args):
     if len(args) == 1:
@@ -60,9 +66,25 @@ def less_than(args):
                 return False
         return True
 
+def append(args):
+    xs, x = args
+    return xs + [x]
+
+def concat(args):
+    xs, ys = args
+    return xs + ys
+
 def nth(args):
     coll, n = args
     return coll[int(n)]
+
+# map
+
+# reduce
+
+# filter
+
+# remove
 
 def get(args):
     hashmap, key = args
@@ -88,11 +110,52 @@ def draw_rect(args):
     ctx, pos, size, colour_hex = args
     x, y = pos
     w, h = size
+    colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).stroke()
+
+def fill_rect(args):
+    ctx, pos, size, colour_hex = args
+    x, y = pos
+    w, h = size
     colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).fill()
 
+def draw_tri(args):
+    ctx, points, colour_hex = args
+    ctx.save()
+    colour(ctx, parse_hex(colour_hex)).begin_path()
+    lx, ly = points[-1]
+    ctx.move_to(lx, ly)
+    for x, y in points:
+        ctx.line_to(x, y)
+    ctx.close_path()
+    ctx.stroke()
+    ctx.restore()
+
+def fill_tri(args):
+    ctx, points, colour_hex = args
+    ctx.save()
+    colour(ctx, parse_hex(colour_hex)).begin_path()
+    lx, ly = points[-1]
+    ctx.move_to(lx, ly)
+    for x, y in points:
+        ctx.line_to(x, y)
+    ctx.close_path()
+    ctx.fill()
+    ctx.restore()
+
+def draw_text(args):
+    ctx, pos, content, colour_hex = args
+    x, y = pos
+    ctx.save()
+    colour(ctx, parse_hex(colour_hex))
+    ctx.move_to(x, y).text(content)
+    ctx.restore()
+
+    
 # @TODO: continue expanding initial env
 INIT_ENV = {
     "list": lambda args: args,
+    "append": append,
+    "concat": concat,
     "first": lambda args: args[0][0],
     "last": lambda args: args[0][-1],
     "rest": lambda args: args[0][1:],
@@ -109,9 +172,13 @@ INIT_ENV = {
     # side effecting functions
     "print": lambda x: print(x[0]),
 
-    # ctx graphcis functions
+    # ctx graphics functions
     "background": background,
     "draw-rect": draw_rect,
+    "fill-rect": fill_rect,
+    "draw-tri": draw_tri,
+    "fill-tri": fill_tri,
+    "draw-text": draw_text,
 
     # Tildagon app lifecycle functions
     "hexp-update": None,
