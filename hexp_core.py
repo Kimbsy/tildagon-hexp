@@ -29,17 +29,16 @@ BROWN = parse_hex("#504136")
 DARK_PINK = parse_hex("#EF0AFF")
 LIGHT_PINK = parse_hex("#FAADFF")
 
-def hexp_or(args):
-    a, b = args
-    return a or b
-
-# other booleans
-
-def colour(ctx, c):
+def _colour(ctx, c):
     r, g, b = c
     return ctx.rgb(r, g, b)
 
-def multiply(args):
+def hexp_or(a, b):
+    return a or b
+
+# @TODO: other booleans
+
+def multiply(*args):
     if len(args) == 1:
         return args[0]
     elif len(args) == 2:
@@ -50,7 +49,7 @@ def multiply(args):
             a = a * val
         return a
 
-def minus(args):
+def minus(*args):
     if len(args) == 1:
         return 0 - args[0]
     elif len(args) == 2:
@@ -61,7 +60,7 @@ def minus(args):
             a = a - val
         return a
 
-def equal(args):
+def equal(*args):
     if len(args) == 1:
         return True
     elif len(args) == 2:
@@ -74,76 +73,67 @@ def equal(args):
                 return False
         return True
 
-def less_than(args):
+def less_than(*args):
     if len(args) == 2:
         a, b = args
         return a < b
     else:
-        a = args[0]
+        test = args[0]
         for val in args[1:]:
-            if val >= a:
+            if val <= test:
                 return False
+            test = val
         return True
 
-def append(args):
-    xs, x = args
+def append(xs, x):
     return xs + [x]
 
-def concat(args):
-    xs, ys = args
+def concat(xs, ys):
     return xs + ys
 
-def nth(args):
-    coll, n = args
+def nth(coll, n):
     return coll[int(n)]
 
-def rand_nth(args):
-    return args[0][randint(0, len(args[0]) - 1)]
+def rand_nth(coll):
+    return coll[randint(0, len(coll) - 1)]
 
-# map
+# @TODO: map
 
-# reduce
+# @TODO: reduce
 
-# filter
+# @TODO: filter
 
-# remove
+# @TODO: remove
 
-def get(args):
-    hashmap, key = args
+def get(hashmap, key):
     return hashmap[key]
 
-def put(args):
-    hashmap, key, val = args
+def put(hashmap, key, val):
     hashmap[key] = val
     return hashmap
 
-def update(args):
-    hashmap, key, f = args
+def update(hashmap, key, f):
     old_v = hashmap[key]
-    new_v = f([old_v])
+    new_v = f(old_v)
     hashmap[key] = new_v
     return hashmap
 
-def background(args):
-    ctx, colour_hex = args
-    colour(ctx, parse_hex(colour_hex)).rectangle(-120, -120, 240, 240).fill()
+def background(ctx, colour_hex):
+    _colour(ctx, parse_hex(colour_hex)).rectangle(-120, -120, 240, 240).fill()
 
-def draw_rect(args):
-    ctx, pos, size, colour_hex = args
+def draw_rect(ctx, pos, size, colour_hex):
     x, y = pos
     w, h = size
-    colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).stroke()
+    _colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).stroke()
 
-def fill_rect(args):
-    ctx, pos, size, colour_hex = args
+def fill_rect(ctx, pos, size, colour_hex):
     x, y = pos
     w, h = size
-    colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).fill()
+    _colour(ctx, parse_hex(colour_hex)).rectangle(x, y, w, h).fill()
 
-def draw_tri(args):
-    ctx, points, colour_hex = args
+def draw_tri(ctx, points, colour_hex):
     ctx.save()
-    colour(ctx, parse_hex(colour_hex)).begin_path()
+    _colour(ctx, parse_hex(colour_hex)).begin_path()
     lx, ly = points[-1]
     ctx.move_to(lx, ly)
     for x, y in points:
@@ -152,10 +142,9 @@ def draw_tri(args):
     ctx.stroke()
     ctx.restore()
 
-def fill_tri(args):
-    ctx, points, colour_hex = args
+def fill_tri(ctx, points, colour_hex):
     ctx.save()
-    colour(ctx, parse_hex(colour_hex)).begin_path()
+    _colour(ctx, parse_hex(colour_hex)).begin_path()
     lx, ly = points[-1]
     ctx.move_to(lx, ly)
     for x, y in points:
@@ -164,34 +153,33 @@ def fill_tri(args):
     ctx.fill()
     ctx.restore()
 
-def draw_text(args):
-    ctx, pos, content, colour_hex = args
+def draw_text(ctx, pos, content, colour_hex):
     x, y = pos
     ctx.save()
-    colour(ctx, parse_hex(colour_hex))
+    _colour(ctx, parse_hex(colour_hex))
     ctx.move_to(x, y).text(content)
     ctx.restore()
     
 # @TODO: continue expanding initial env
 INIT_ENV = {
     "or": hexp_or,
-    "list": lambda args: args,
+    "list": lambda *args: list(args),
     "append": append,
     "concat": concat,
-    "first": lambda args: args[0][0],
-    "last": lambda args: args[0][-1],
-    "rest": lambda args: args[0][1:],
+    "first": lambda coll: coll[0],
+    "last": lambda coll: coll[-1],
+    "rest": lambda coll: coll[1:],
     "nth": nth,
     "rand-nth": rand_nth,
     "get": get,
     "put": put,
     "update": update,
-    "+": sum,
+    "+": lambda *args: sum(args),
     "-": minus,
     "*": multiply,
     "=": equal,
     "<": less_than,
-    "parse-hex": lambda s: parse_hex(s[0]),
+    "parse-hex": lambda s: parse_hex(s),
 
     # side effecting functions
     "print": lambda x: print(x[0]),

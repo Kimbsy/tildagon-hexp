@@ -37,8 +37,8 @@ def run():
                 else:
                     failures.append(result)
                     print(RED + "F" + GREEN, end='')
-        except:
-            failures.append(t)
+        except Exception as e:
+            failures.append(t + [repr(e)])
             print(RED + "F" + GREEN, end='')
     print(ENDC)
     print("Ran " + str(len(TESTS)) + " tests")
@@ -71,6 +71,9 @@ TESTS = [
     ["(- 10 1)", 9],
     ["(- 10 1 2 3)", 4],
     ["(- 4)", -4],
+    ["(* 2 2)", 4],
+    ["(* 2 2 2)", 8],
+    ["(* 2)", 2],
     ["(if true 1 2)", 1],
     ["(if false 1 2)", 2],
     ["(if (= 5 6) 1 2)", 2],
@@ -78,6 +81,10 @@ TESTS = [
     ["(if (= 5) 1 2)", 1],
     ["(if (= 5 5 5 5) 1 2)", 1],
     ["(if (= 5 5 5 6) 1 2)", 2],
+    ["(< 1 2)", True],
+    ["(< 2 1)", False],
+    ["(< 1 2 3)", True],
+    ["(< 1 3 2)", False],
     ["(quote 100)", 100],
     ["(quote (1 2 3))", [1, 2, 3]],
     ["(quote (1 (2 3 ())))", [1, [2, 3, []]]],

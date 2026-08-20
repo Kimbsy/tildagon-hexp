@@ -159,7 +159,7 @@ def reduce_eval(exprs, env, ctx):
 def handle_fn(arg_exprs, env, ctx):
     params, *bodies = arg_exprs
     # Python only allows single line lambdas !!!?!
-    return (lambda arg_list: reduce_eval(bodies, extend_env(env, zip(params, arg_list)), ctx)[0], env)
+    return (lambda *arg_list: reduce_eval(bodies, extend_env(env, zip(params, arg_list)), ctx)[0], env)
 
 # With an `if`, we expect a `(consequent)` and `(alternative)` body expressions, we should only evaluate one
 def handle_if(arg_exprs, env, ctx):
@@ -247,4 +247,4 @@ def evaluate(expr, env, ctx=None):
             # print("!!!!!!!1")
             # print(f)
             # print(args)
-            return (f(args), env)
+            return (f(*args), env)
