@@ -53,7 +53,7 @@ So as soon as your program is evaluated Hexp will be able to draw to the screen 
 
 I don't think we'll be running Doom anytime soon, but a bouncing DVD logo? That's absolutely achievable.
 
-Check out the `examples/draw-square.hxp` program (type it into the repl if you like!) for an example.
+Check out the `examples/*.hxp` programs (type it into the repl if you like!) for an example.
 
 ## Setup and run on badge for local development
 
