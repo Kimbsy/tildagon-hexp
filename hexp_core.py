@@ -33,10 +33,17 @@ def _colour(ctx, c):
     r, g, b = c
     return ctx.rgb(r, g, b)
 
+def hexp_and(a, b):
+    return a and b
+
 def hexp_or(a, b):
     return a or b
 
-# @TODO: other booleans
+def hexp_not(a):
+    return not a
+
+def complement(f):
+    return lambda x: not f(x)
 
 def multiply(*args):
     if len(args) == 1:
@@ -85,10 +92,10 @@ def less_than(*args):
             test = val
         return True
 
-def append(xs, x):
+def hexp_append(xs, x):
     return xs + [x]
 
-def concat(xs, ys):
+def hexp_concat(xs, ys):
     return xs + ys
 
 def nth(coll, n):
@@ -97,13 +104,25 @@ def nth(coll, n):
 def rand_nth(coll):
     return coll[randint(0, len(coll) - 1)]
 
-# @TODO: map
+def hexp_map(f, coll):
+    return list(map(f, coll))
 
-# @TODO: reduce
+def hexp_reduce(*args):
+    if len(args) == 2:
+        f, coll = args
+        init = f()
+    else:
+        f, init, coll = args
+    acc = init
+    for c in coll:
+        acc = f(acc, c)
+    return acc
 
-# @TODO: filter
+def hexp_filter(f, coll):
+    return list(filter(f, coll))
 
-# @TODO: remove
+def hexp_remove(f, coll):
+    return list(filter(lambda c: not f(c), coll))
 
 def get(hashmap, key):
     return hashmap[key]
@@ -159,18 +178,24 @@ def draw_text(ctx, pos, content, colour_hex):
     _colour(ctx, parse_hex(colour_hex))
     ctx.move_to(x, y).text(content)
     ctx.restore()
-    
-# @TODO: continue expanding initial env
+
 INIT_ENV = {
+    "and": hexp_and,
     "or": hexp_or,
+    "not": hexp_not,
+    "complement": lambda f: lambda x: not f(x),
     "list": lambda *args: list(args),
-    "append": append,
-    "concat": concat,
+    "append": hexp_append,
+    "concat": hexp_concat,
     "first": lambda coll: coll[0],
     "last": lambda coll: coll[-1],
     "rest": lambda coll: coll[1:],
     "nth": nth,
     "rand-nth": rand_nth,
+    "map": hexp_map,
+    "reduce": hexp_reduce,
+    "filter": hexp_filter,
+    "remove": hexp_remove,
     "get": get,
     "put": put,
     "update": update,
@@ -179,6 +204,8 @@ INIT_ENV = {
     "*": multiply,
     "=": equal,
     "<": less_than,
+    "odd?": lambda n: n % 2 == 1,
+    "even?": lambda n: n % 2 == 0,
     "parse-hex": lambda s: parse_hex(s),
 
     # side effecting functions
