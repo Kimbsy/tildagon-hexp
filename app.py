@@ -12,7 +12,6 @@ from .hexp_lang import evaluate, read_expr_string, remove_comments
 from .hexp_repl import HexpRepl
 from .palette import *
 from .session import *
-from .util import *
 
 # App states
 MAIN_MENU = "Main Menu"
