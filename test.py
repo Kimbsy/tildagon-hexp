@@ -2,7 +2,7 @@
 
 import time
 from hexp_core import INIT_ENV
-from hexp_lang import evaluate, read_expr_string
+from hexp_lang import evaluate, read_expr_string, new_read_expr_string
 
 # Check if the result of evaluating something is what we expect
 def test_expected(expr, expected_output):
@@ -57,6 +57,29 @@ def run():
     else:
         print("All passed " + GREEN + "[OK]" + ENDC)
     print("{:.2f}".format(((time.time() * 1000) - start_ms)) + "ms")
+
+def upgrade_check():
+    failures = [];
+    for t in TESTS:
+        try:
+            e = t[0]
+            old = read_expr_string(e)
+            new = new_read_expr_string(e)
+            if old == new:
+                print(GREEN + '.' + ENDC, end='')
+            else:
+                print(RED + "F" + ENDC, end='')
+                failures.append([e, old, new])
+        except Exception as e:
+            failures.append([e, old, new])
+            print(RED + "F" + ENDC, end='')
+    print("\nRan " + str(len(TESTS)) + " tests")
+    if len(failures) > 0:
+        print("\n" + str(len(failures)) + " Failure(s):")
+        for f in failures:
+            print(f)
+    else:
+        print("All passed " + GREEN + "[OK]" + ENDC)
     
 TESTS = [
     ["42", 42],
@@ -169,4 +192,6 @@ TESTS = [
     
 ]
 
-run()
+# run()
+
+upgrade_check()

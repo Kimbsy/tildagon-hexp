@@ -139,6 +139,140 @@ def read_expr_string(s):
     else:
         return read_atom(s)
 
+def new_read_atom(s, is_string):
+    if is_string:
+        return s
+    
+    # @TODO: handle negative number literals
+    # is it a number
+    if re.match(r"\d+\.?\d*", s):
+        return float(s)    
+    # is it a boolean?
+    elif s in BOOLS.keys():
+        return BOOLS[s]
+    # is it a special form? wrap it in a Special
+    elif s in SPECIAL_FORMS.keys():
+        return Special(s)
+    # otherwise it's a variable name, wrap it in a Symbol
+    else:
+        return Symbol(s)
+
+# s is a single expression, some lines may be comments (starting with ;;)
+def new_read_expr_string(s):
+    s = remove_comments(s)
+    s = s.replace(',', ' ').strip()
+
+    incomplete_containers = []
+    container = None
+    map_key = None
+    token = ""
+    token_is_string = False
+    in_string = False
+    in_map = False
+
+    for c in s:
+        if c == "'":
+            if in_string:
+                in_string = False
+            else:
+                in_string = True
+                token_is_string = True
+        elif in_string:
+            token += c
+
+        elif c == '(':
+            if token:
+                if in_map:
+                    if map_key is None:
+                        map_key = new_read_atom(token, token_is_string)
+                    else:
+                        container[map_key] = new_read_atom(token, token_is_string)
+                        map_key = None
+                else:
+                    container.append(new_read_atom(token, token_is_string))
+                token = ""
+                token_is_string = False
+
+            incomplete_containers.append(
+                (container, map_key, in_map)
+            )
+            container = []
+            map_key = None
+            in_map = False
+
+        elif c == '{':
+            if token:
+                if in_map:
+                    if map_key is None:
+                        map_key = new_read_atom(token, token_is_string)
+                    else:
+                        container[map_key] = new_read_atom(token, token_is_string)
+                        map_key = None
+                else:
+                    container.append(new_read_atom(token, token_is_string))
+                token = ""
+                token_is_string = False
+
+            incomplete_containers.append(
+                (container, map_key, in_map)
+            )
+            container = {}
+            map_key = None
+            in_map = True
+
+        elif c == ')' or c == '}':
+            if token:
+                if in_map:
+                    if map_key is None:
+                        map_key = new_read_atom(token, token_is_string)
+                    else:
+                        container[map_key] = new_read_atom(token, token_is_string)
+                        map_key = None
+                else:
+                    container.append(new_read_atom(token, token_is_string))
+                token = ""
+                token_is_string = False
+
+            completed_container = container
+            container, map_key, in_map = incomplete_containers.pop()
+
+            # if there is no parent, this was the top level and we're done
+            if container is None:
+                return completed_container
+
+            if in_map:
+                container[map_key] = completed_container
+                map_key = None
+            else:
+                container.append(completed_container)
+
+        elif c.isspace():
+            if token:
+                if in_map:
+                    if map_key is None:
+                        map_key = new_read_atom(token, token_is_string)
+                    else:
+                        container[map_key] = new_read_atom(token, token_is_string)
+                        map_key = None
+                else:
+                    container.append(new_read_atom(token, token_is_string))
+                token = ""
+                token_is_string = False
+        else:
+            token += c
+
+    if token:
+        if container is not None:
+            if in_map:
+                container[map_key] = new_read_atom(token, token_is_string)
+            else:
+                container.append(new_read_atom(token, token_is_string))
+            return container
+        else:
+            return new_read_atom(token, token_is_string)
+
+    raise ValueError('Unclosed expression: ' + s)
+
 def is_atom(expr):
     return not isinstance(expr, list)
 
@@ -202,12 +336,16 @@ class Special:
         self.handler = SPECIAL_FORMS[s]
     def __repr__(self):
         return "<spf: " + self.name + " >"
+    def __eq__(self, other):
+        return isinstance(other, Special) and self.name == other.name
 
 class Symbol:
     def __init__(self, s):
         self.name = s
     def __repr__(self):
         return "<sym: " + self.name + " >"
+    def __eq__(self, other):
+        return isinstance(other, Symbol) and self.name == other.name
 
 def is_special(expr):
     return isinstance(expr, Special)
