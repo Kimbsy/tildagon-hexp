@@ -8,7 +8,7 @@ from display import get_ctx
 from system.eventbus import eventbus
 from typing import Literal
 from .hexp_core import INIT_ENV
-from .hexp_lang import evaluate, new_evaluate, read_expr_string, new_read_expr_string, remove_comments
+from .hexp_lang import evaluate, read_expr_string, remove_comments
 from .hexp_repl import HexpRepl
 from .palette import *
 from .session import *
@@ -38,8 +38,8 @@ class HexpApp(App):
         super().__init__()
         self.session = Session(
             INIT_ENV,
-            new_read_expr_string,
-            new_evaluate,
+            read_expr_string,
+            evaluate,
             self.session_error_handler,
             get_ctx())
         self.menu = Menu(
@@ -49,16 +49,6 @@ class HexpApp(App):
             back_handler = self.multi_menu_back_handler
         )
         self._init_prog_store()
-
-
-        # This fails on the old read and the old evaluate hitting max recursion depth
-        foo = "(+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 2))))))))))))))))))))))))))))))))"
-        print("111111111!!!!!!!!!!!!!!!!!!!")
-        # passes with the new read
-        print(new_read_expr_string(foo))
-        print("2222222222!!!!!!!!!!!!!!!!!!!")
-        print(self.session.evaluate(foo))
-        
 
         self.notification = None
         self.state = MAIN_MENU

@@ -7,113 +7,6 @@ BOOLS = {
     "false": False
 }
 
-def read_atom(s):
-    # @TODO: handle negative number literals
-    # is it a number
-    if re.match(r"\d+\.?\d*", s):
-        return float(s)    
-    # is it a boolean?
-    elif s in BOOLS.keys():
-        return BOOLS[s]
-    # is it a string?
-    elif re.match(r"\'.*\'", s):
-        return s[1:-1]
-    # is it a special form? wrap it in a Special
-    elif s in SPECIAL_FORMS.keys():
-        return Special(s)
-    # otherwise it's a variable name, wrap it in a Symbol
-    else:
-        return Symbol(s)
-
-# Our map is a pair of braces {} with an even number of space-separated expressions inside. We should track the braces/parens/quotes and split when we find a space without being in any other expression
-def read_map(s):
-    remaining = s[1:-1]
-    sub_exprs = []
-    # parens, braces and quote levels
-    p = 0
-    b = 0
-    q = 0
-    current = ""
-    # @TODO: we should probably ignore ps and bs if we're in an open q? otherwise you couldn't represent the string ':)'
-    while len(remaining) > 0:
-        c = remaining[0]
-        if c == "(":
-            p = p + 1
-        elif c == ")":
-            p = p - 1
-        elif c == "{":
-            b = b + 1
-        elif c == "}":
-            b = b - 1
-        elif c == "'" and q == 0:
-            q = q + 1
-        elif c == "'" and q == 1:
-            q = q - 1
-        elif p == 0 and b == 0 and q == 0 and c == " ":
-            sub_exprs.append(current)
-            current = ""
-        current = current + c
-        remaining = remaining[1:]
-    if len(current) > 0:
-        sub_exprs.append(current)
-    
-    key_exprs = sub_exprs[0::2]
-    val_exprs = sub_exprs[1::2]
-    keys = map(lambda k: read_expr_string(k), key_exprs)
-    vals = map(lambda v: read_expr_string(v), val_exprs)
-    return dict(zip(keys, vals))
-
-    
-# we have a string which starts with an open paren, we want to take chars till it matching close, then return this sublist along with the remaining (or maybe just this sublist)
-def take_sublist(s, opening, closing):
-    out = opening
-    remaining = s[1:]
-    level = 1
-    while level > 0:
-        c = remaining[0]
-        if c == closing:
-            level = level - 1
-        elif c == opening:
-            level = level + 1
-        remaining = remaining[1:]
-        out = out + c
-    return out
-        
-# we want to split by spaces, but not if we're inside a paren
-# if we find a paren, we should slurp till parens are balanced
-
-# then for each sub expression string we want to call the parent
-# read_expr_string on it, this should recursively get all our
-# sublists
-def read_list(s):
-    inner = s[1:-1]
-    sub_exprs = []
-    current_expr = ""
-    remaining = inner
-
-    # @TODO: we need to also keep track of if we're inside single quotes so we can have spaces in strings!!!!
-
-    while len(remaining) >= 1:
-        c = remaining[0]
-        step = 1
-        if c == "(":
-            sublist = take_sublist(remaining, "(", ")")
-            step = len(sublist)
-            sub_exprs.append(read_expr_string(sublist))
-        elif c == "{":
-            sublist = take_sublist(remaining, "{", "}")
-            step = len(sublist)
-            sub_exprs.append(read_expr_string(sublist))
-        elif c == " " and len(current_expr) > 0:
-            sub_exprs.append(read_expr_string(current_expr))
-            current_expr = ""
-        elif c != " ":
-            current_expr = current_expr + c
-        remaining = remaining[step:]
-    if len(current_expr) > 0:
-        sub_exprs.append(read_expr_string(current_expr))
-    return sub_exprs
-
 # MicroPython regex sucks, we can't just re.sub(r";;.*", "", s)
 # So we split by lines, then remove comment lines, then patch it back together
 def remove_comments(s):
@@ -126,20 +19,7 @@ def remove_comments(s):
 
 # We need to handle reading whole files and multi-line input better, we should parse a file while tracking parens, not _require_ two newlines between expressions
 
-def read_expr_string(s):
-    s = remove_comments(s)
-    s = s.replace('\n', ' ').replace(',', ' ').strip()
-    # is it a list?
-    if re.match(r"\(.*\)", s):
-        return read_list(s)
-    # is it a map?
-    elif re.match(r"\{.*\}", s):
-        return read_map(s)
-    # it must be an atom
-    else:
-        return read_atom(s)
-
-def new_read_atom(s, is_string):
+def read_atom(s, is_string):
     if is_string:
         return s
     
@@ -158,7 +38,7 @@ def new_read_atom(s, is_string):
         return Symbol(s)
 
 # s is a single expression, some lines may be comments (starting with ;;)
-def new_read_expr_string(s):
+def read_expr_string(s):
     s = remove_comments(s)
     s = s.replace(',', ' ').strip()
 
@@ -184,12 +64,12 @@ def new_read_expr_string(s):
             if token:
                 if in_map:
                     if map_key is None:
-                        map_key = new_read_atom(token, token_is_string)
+                        map_key = read_atom(token, token_is_string)
                     else:
-                        container[map_key] = new_read_atom(token, token_is_string)
+                        container[map_key] = read_atom(token, token_is_string)
                         map_key = None
                 else:
-                    container.append(new_read_atom(token, token_is_string))
+                    container.append(read_atom(token, token_is_string))
                 token = ""
                 token_is_string = False
 
@@ -204,12 +84,12 @@ def new_read_expr_string(s):
             if token:
                 if in_map:
                     if map_key is None:
-                        map_key = new_read_atom(token, token_is_string)
+                        map_key = read_atom(token, token_is_string)
                     else:
-                        container[map_key] = new_read_atom(token, token_is_string)
+                        container[map_key] = read_atom(token, token_is_string)
                         map_key = None
                 else:
-                    container.append(new_read_atom(token, token_is_string))
+                    container.append(read_atom(token, token_is_string))
                 token = ""
                 token_is_string = False
 
@@ -224,12 +104,12 @@ def new_read_expr_string(s):
             if token:
                 if in_map:
                     if map_key is None:
-                        map_key = new_read_atom(token, token_is_string)
+                        map_key = read_atom(token, token_is_string)
                     else:
-                        container[map_key] = new_read_atom(token, token_is_string)
+                        container[map_key] = read_atom(token, token_is_string)
                         map_key = None
                 else:
-                    container.append(new_read_atom(token, token_is_string))
+                    container.append(read_atom(token, token_is_string))
                 token = ""
                 token_is_string = False
 
@@ -250,12 +130,12 @@ def new_read_expr_string(s):
             if token:
                 if in_map:
                     if map_key is None:
-                        map_key = new_read_atom(token, token_is_string)
+                        map_key = read_atom(token, token_is_string)
                     else:
-                        container[map_key] = new_read_atom(token, token_is_string)
+                        container[map_key] = read_atom(token, token_is_string)
                         map_key = None
                 else:
-                    container.append(new_read_atom(token, token_is_string))
+                    container.append(read_atom(token, token_is_string))
                 token = ""
                 token_is_string = False
         else:
@@ -264,12 +144,12 @@ def new_read_expr_string(s):
     if token:
         if container is not None:
             if in_map:
-                container[map_key] = new_read_atom(token, token_is_string)
+                container[map_key] = read_atom(token, token_is_string)
             else:
-                container.append(new_read_atom(token, token_is_string))
+                container.append(read_atom(token, token_is_string))
             return container
         else:
-            return new_read_atom(token, token_is_string)
+            return read_atom(token, token_is_string)
 
     raise ValueError('Unclosed expression: ' + s)
 
@@ -288,6 +168,8 @@ def reduce_eval(exprs, env, ctx):
     for expr in exprs:
         res, env = evaluate(expr, env, ctx)
     return (res, env)
+
+# @TODO: does recursion work with these functions?
 
 # With a `fn` we expect a list of params, then any number of `(body1) (body2)` expressions
 def handle_fn(arg_exprs, env, ctx):
@@ -364,30 +246,6 @@ REQUIRES_CTX = [
 ]
 
 def evaluate(expr, env, ctx=None):
-    if is_atom(expr):
-         # lookup a symbol in the environment
-        if is_symbol(expr):
-            return (env[expr.name], env)
-        else:
-            # return a literal value
-            return (expr, env)
-    else:
-        f_exp, *arg_exprs = expr
-        f = evaluate(f_exp, env, ctx)[0]
-        # handle special forms
-        if is_special(f):
-            return f.handler(arg_exprs, env, ctx)
-        # function application
-        else:
-            args = list(map(lambda arg: evaluate(arg, env, ctx)[0], arg_exprs))
-            if is_symbol(f_exp) and f_exp.name in REQUIRES_CTX:
-                args.insert(0, ctx)
-            # print("!!!!!!!1")
-            # print(f)
-            # print(args)
-            return (f(*args), env)
-
-def new_evaluate(expr, env, ctx=None):
     stack = [("eval", [expr, env])]
     result = None
 
@@ -431,9 +289,13 @@ def new_evaluate(expr, env, ctx=None):
         elif op == "arguments":
             f, f_exp, arg_exprs, env, args, arg_index = work
 
-            if arg_index < len(arg_exprs):
-                # add the arg value from the eval immediately preceding this
+            # add the arg value from the eval immediately preceding
+            # this (except the first one which is the function to
+            # apply)
+            if arg_index > 0:
                 args.append(result[0])
+            
+            if arg_index < len(arg_exprs):
                 stack.append(("arguments", [f, f_exp, arg_exprs, env, args, arg_index + 1]))
                 stack.append(("eval", [arg_exprs[arg_index], env]))
             else:

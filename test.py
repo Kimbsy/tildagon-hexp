@@ -2,12 +2,12 @@
 
 import time
 from hexp_core import INIT_ENV
-from hexp_lang import evaluate, new_evaluate, read_expr_string, new_read_expr_string
+from hexp_lang import evaluate, read_expr_string
 
 # Check if the result of evaluating something is what we expect
 def test_expected(expr, expected_output):
     parsed = read_expr_string(expr)
-    output = new_evaluate(parsed, INIT_ENV)[0]
+    output = evaluate(parsed, INIT_ENV)[0]
     if output == expected_output:
         return True
     else:
@@ -15,7 +15,7 @@ def test_expected(expr, expected_output):
 
 # Just check if we can evaluate something without throwing
 def test_evaluate(expr):
-    new_evaluate(read_expr_string(expr), INIT_ENV)[0]
+    evaluate(read_expr_string(expr), INIT_ENV)[0]
 
 GREEN = '\033[92m'
 RED = '\033[91m'
@@ -57,29 +57,6 @@ def run():
     else:
         print("All passed " + GREEN + "[OK]" + ENDC)
     print("{:.2f}".format(((time.time() * 1000) - start_ms)) + "ms")
-
-def upgrade_check():
-    failures = [];
-    for t in TESTS:
-        try:
-            e = t[0]
-            old = read_expr_string(e)
-            new = new_read_expr_string(e)
-            if old == new:
-                print(GREEN + '.' + ENDC, end='')
-            else:
-                print(RED + "F" + ENDC, end='')
-                failures.append([e, old, new])
-        except Exception as e:
-            failures.append([e, old, new])
-            print(RED + "F" + ENDC, end='')
-    print("\nRan " + str(len(TESTS)) + " tests")
-    if len(failures) > 0:
-        print("\n" + str(len(failures)) + " Failure(s):")
-        for f in failures:
-            print(f)
-    else:
-        print("All passed " + GREEN + "[OK]" + ENDC)
     
 TESTS = [
     ["42", 42],
@@ -193,5 +170,3 @@ TESTS = [
 ]
 
 run()
-
-upgrade_check()
