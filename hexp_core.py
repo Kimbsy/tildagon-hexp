@@ -207,8 +207,8 @@ INIT_ENV = {
     "odd?": lambda n: n % 2 == 1,
     "even?": lambda n: n % 2 == 0,
     "parse-hex": lambda s: parse_hex(s),
-
-    # @TODO: add coll? and symbol? predicates do we need to import the Symbol class? or jut duplicate the regex in read_atom?
+    "coll?": lambda x: isinstance(x, list),
+    "symbol?": lambda x: type(x).__name__ == "Symbol",
 
     # side effecting functions
     "print": lambda x: print(x[0]),

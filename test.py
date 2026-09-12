@@ -166,6 +166,25 @@ TESTS = [
     ["(and false false)", False],
     ["(not true)", False],
     ["(not false)", True],
+    ["""(let (foo (fn (b) (if b (foo (not b)) 42)))
+          (foo false))""", 42],
+    ["""(let (foo (fn (b) (if b (foo (not b)) 42)))
+          (foo true))""", 42],
+    ["""(let (foo (fn (xs i)
+                     (if (= (list) xs)
+                        i
+                        (foo (rest xs) (+ i 1)))))
+          (foo (list 1 1 1 1) 0))""", 4],
+    ["(coll? 1)", False],
+    ["(coll? true)", False],
+    ["(coll? (list))", True],
+    ["(coll? (list 1 2 3))", True],
+    ["(coll? (quote (1 2 3)))", True],
+    ["(symbol? 1)", False],
+    ["(symbol? 'foo')", False],
+    ["(symbol? (quote sssssssssssssssssssssssssssssssd))", True],
+    ["""(let (foo 1) (symbol? foo))""", False],
+    ["""(let (foo 1) (symbol? (quote foo)))""", True],
     
 ]
 
