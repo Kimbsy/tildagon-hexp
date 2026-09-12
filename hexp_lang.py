@@ -386,3 +386,60 @@ def evaluate(expr, env, ctx=None):
             # print(f)
             # print(args)
             return (f(*args), env)
+
+def new_evaluate(expr, env, ctx=None):
+    stack = [("eval", [expr, env])]
+    result = None
+
+    while stack:
+        op, work = stack.pop()
+
+        if op == "eval":
+            expr, env = work
+            
+            if is_atom(expr):
+                # lookup a symbol in the environment
+                if is_symbol(expr):
+                    result = (env[expr.name], env)
+                else:
+                    # a literal value
+                    result = (expr, env)
+            else:
+                f_exp, *arg_exprs = expr
+                
+                # appending backwards to ensure function is evaluated before it's applied
+                stack.append(("apply", [f_exp, arg_exprs, env]))
+                stack.append(("eval", [f_exp, env]))
+
+        elif op == "apply":
+            f_exp, arg_exprs, env = work
+            # f is the result of the eval immediately preceding this
+            f = result[0]
+
+            if is_special(f_exp):
+                result = f.handler(arg_exprs, env, ctx)
+
+            else:
+                # we're going to evaluate each arg one at a time,
+                # collecting them in the args `[]` till this arg_index
+                # 0 is at the length of arg_exprs
+                stack.append(("arguments", [f, f_exp, arg_exprs, env, [], 0]))
+
+                if arg_exprs:
+                    stack.append(("eval", [arg_exprs[0], env]))
+
+        elif op == "arguments":
+            f, f_exp, arg_exprs, env, args, arg_index = work
+
+            if arg_index < len(arg_exprs):
+                # add the arg value from the eval immediately preceding this
+                args.append(result[0])
+                stack.append(("arguments", [f, f_exp, arg_exprs, env, args, arg_index + 1]))
+                stack.append(("eval", [arg_exprs[arg_index], env]))
+            else:
+                if is_symbol(f_exp) and f_exp.name in REQUIRES_CTX:
+                    args.insert(0, ctx)
+
+                result = (f(*args), env)
+
+    return result

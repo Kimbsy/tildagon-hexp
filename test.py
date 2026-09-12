@@ -2,12 +2,12 @@
 
 import time
 from hexp_core import INIT_ENV
-from hexp_lang import evaluate, read_expr_string, new_read_expr_string
+from hexp_lang import evaluate, new_evaluate, read_expr_string, new_read_expr_string
 
 # Check if the result of evaluating something is what we expect
 def test_expected(expr, expected_output):
     parsed = read_expr_string(expr)
-    output = evaluate(parsed, INIT_ENV)[0]
+    output = new_evaluate(parsed, INIT_ENV)[0]
     if output == expected_output:
         return True
     else:
@@ -15,7 +15,7 @@ def test_expected(expr, expected_output):
 
 # Just check if we can evaluate something without throwing
 def test_evaluate(expr):
-    evaluate(read_expr_string(expr), INIT_ENV)[0]
+    new_evaluate(read_expr_string(expr), INIT_ENV)[0]
 
 GREEN = '\033[92m'
 RED = '\033[91m'
@@ -192,6 +192,6 @@ TESTS = [
     
 ]
 
-# run()
+run()
 
 upgrade_check()
