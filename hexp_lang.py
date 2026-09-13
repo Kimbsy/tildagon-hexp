@@ -156,11 +156,11 @@ def read_expr_string(s):
 def is_atom(expr):
     return not isinstance(expr, list)
 
+# @NOTE! mutating env dict!!!
 def extend_env(env, bindings):
-    scoped_env = env
     for param, arg in bindings:
-        scoped_env[param.name] = arg
-    return scoped_env
+        env[param.name] = arg
+    return env
 
 # Evaluate multiple expressions,allowing update to env each time (for `def` etc), returns the value of the final expression and the final env
 def reduce_eval(exprs, env, ctx):
@@ -169,13 +169,14 @@ def reduce_eval(exprs, env, ctx):
         res, env = evaluate(expr, env, ctx)
     return (res, env)
 
-# @TODO: does recursion work with these functions?
-
 # With a `fn` we expect a list of params, then any number of `(body1) (body2)` expressions
 def handle_fn(arg_exprs, env, ctx):
     params, *bodies = arg_exprs
     # Python only allows single line lambdas !!!?!
-    return (lambda *arg_list: reduce_eval(bodies, extend_env(env, zip(params, arg_list)), ctx)[0], env)
+    new_env = env.copy()
+    f = lambda *arg_list: reduce_eval(bodies, extend_env(new_env, zip(params, arg_list)), ctx)[0]
+    new_env["recur"] = f
+    return (f, env)
 
 # With an `if`, we expect a `(consequent)` and `(alternative)` body expressions, we should only evaluate one
 def handle_if(arg_exprs, env, ctx):
@@ -188,10 +189,14 @@ def handle_if(arg_exprs, env, ctx):
 # With `let` we expect a set of `(a 1 b 2)` bindings and any number of `(body1) (body2)` expressions
 def handle_let(arg_exprs, env, ctx):
     raw_bindings, *bodies = arg_exprs
-    names = raw_bindings[0::2]
-    # @TODO: do we not need to evaluate these one by one and extend the env each time?
-    vals = map(lambda v: evaluate(v, env)[0], raw_bindings[1::2])
-    scoped_env = extend_env(env, zip(names, vals))
+    scoped_env = env.copy()
+    syms = raw_bindings[0::2]
+    val_exprs = raw_bindings[1::2]
+
+    for sym, val_expr in zip(syms, val_exprs):
+        val = evaluate(val_expr, scoped_env, ctx)[0]
+        scoped_env[sym.name] = val
+    
     return (reduce_eval(bodies, scoped_env, ctx)[0], env)
 
 # With `quote` we just return the expression data structure unevaluated
@@ -202,7 +207,8 @@ def handle_quote(arg_exprs, env, ctx):
 def handle_def(arg_exprs, env, ctx):
     name_sym, body_expr = arg_exprs
     res = evaluate(body_expr, env, ctx)[0]
-    return (res, extend_env(env, zip([name_sym], [res])))
+    new_env = env.copy()
+    return (res, extend_env(new_env, zip([name_sym], [res])))
 
 SPECIAL_FORMS = {
     "fn": handle_fn,

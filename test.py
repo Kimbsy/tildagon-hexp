@@ -113,6 +113,7 @@ TESTS = [
     ["(let (inc (fn (n) (+ n 1))) (inc 41))", 42],
     ["(let (a 1 b 2) (+ a b) 400)", 400],
     ["(let (a 1) (def foo 41) (+ foo a))", 42],
+    ["(let (a 10) (let (a 20)) a)", 10],
     ["(parse-hex '#ff00ff')", [1, 0, 1]],
     ["(list)", []],
     ["(list 1 2 3)", [1, 2, 3]],
@@ -166,14 +167,14 @@ TESTS = [
     ["(and false false)", False],
     ["(not true)", False],
     ["(not false)", True],
-    ["""(let (foo (fn (b) (if b (foo (not b)) 42)))
+    ["""(let (foo (fn (b) (if b (recur (not b)) 42)))
           (foo false))""", 42],
-    ["""(let (foo (fn (b) (if b (foo (not b)) 42)))
+    ["""(let (foo (fn (b) (if b (recur (not b)) 42)))
           (foo true))""", 42],
     ["""(let (foo (fn (xs i)
                      (if (= (list) xs)
                         i
-                        (foo (rest xs) (+ i 1)))))
+                        (recur (rest xs) (+ i 1)))))
           (foo (list 1 1 1 1) 0))""", 4],
     ["(coll? 1)", False],
     ["(coll? true)", False],

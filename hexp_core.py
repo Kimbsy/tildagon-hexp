@@ -225,3 +225,31 @@ INIT_ENV = {
     "hexp-update": None,
     "hexp-draw": None
 }
+
+
+
+
+# (hexp++
+#  (quote
+
+#   ;; Calculate the factorial of 5 using the Y Combinator to
+#   ;; implement recursion.
+
+#   (((λ Y
+#        ;; factorial function
+#        (Y (λ fact
+#              (λ n
+#                 (if ((= n) 0)
+#                   1
+#                   ((* n) (fact ((- n) 1))))))))
+
+#     ;; Y Combinator
+#     (λ f
+#        ((λ x (x x))
+#         (λ x
+#            (f (λ y
+#                  ((x x) y)))))))
+
+#    ;; applied to 5
+#    5))
+#  initial-env)
