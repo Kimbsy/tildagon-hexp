@@ -25,28 +25,24 @@
         (if (symbol? e)
           (env e)
           e)
-
         (let (head (first e)
                    tail (rest e))
           (if (= head (quote quote))
             (nth e 1)
-
             (if (= head (quote if))
               (if (recur (nth e 1) env)
                 (hexp++ (nth e 2) env)
                 (hexp++ (nth e 3) env))
-
-              (if (= head (quote λ))
+              (if (= head (quote fun))
                 (fn (val)
                   (hexp++ (nth e 2) (extend env (first (nth e 1)) val)))
-
                 (apply
                  (hexp++ (first e) env)
                  (map (fn (arg-exp)
                         (hexp++ arg-exp env))
                       (rest e)))))))))))
 
-;; (hexp++ (quote 20) initial)
-;; (hexp++ (quote (+ 1 2 3)) initial)
-;; (hexp++ (quote ((λ (x) x) 400)) initial)
-;; (hexp++ (quote ((λ (n) (+ n 1)) 41)) initial)
+(hexp++ (quote ((fun (n) (+ n 1)) 21)) initial)
+(hexp++ (quote (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 (+ 9 (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 9)))))))))))))))))) initial)
+
+;; severely limited in that special forms are implemented with recursive calls to evaluate in hexp
