@@ -107,6 +107,9 @@ def rand_nth(coll):
 def hexp_map(f, coll):
     return list(map(f, coll))
 
+def hexp_apply(f, coll):
+    return f(*coll)
+
 def hexp_reduce(*args):
     if len(args) == 2:
         f, coll = args
@@ -193,6 +196,7 @@ INIT_ENV = {
     "nth": nth,
     "rand-nth": rand_nth,
     "map": hexp_map,
+    "apply": hexp_apply,
     "reduce": hexp_reduce,
     "filter": hexp_filter,
     "remove": hexp_remove,
@@ -211,7 +215,7 @@ INIT_ENV = {
     "symbol?": lambda x: type(x).__name__ == "Symbol",
 
     # side effecting functions
-    "print": lambda x: print(x[0]),
+    "print": print,
 
     # ctx graphics functions
     "background": background,
