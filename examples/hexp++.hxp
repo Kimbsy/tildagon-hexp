@@ -42,5 +42,8 @@
                         (hexp++ arg-exp env))
                       (rest e)))))))))))
 
-;; (hexp++ (quote (+ 1 2 3)) initial)
-;; (hexp++ (quote ((fun (n) (+ n 1)) 21)) initial)
+;; you can now write code in Hexp++
+(hexp++
+ (quote
+  (+ 1 2 3))
+ initial)

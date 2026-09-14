@@ -148,6 +148,8 @@ TESTS = [
     ["{'foo' 'bar'}", {'foo': 'bar'}],
     ["{'foo' {'bar' {'baz' 33}}}", {'foo': {'bar': {'baz': 33}}}],
     ["{'foo' 1 'bar' 2}", {'foo': 1, 'bar': 2}],
+    ["{'foo' (list 1 2)}", {'foo': [1, 2]}],
+    ["{'foo' (+ 1 2) 'bar' (list (list 1))}", {'foo': 3, 'bar': [[1]]}],
     ["(get {'foo' 1 'bar' 2} 'bar')", 2],
     ["(get (get {'foo' {'bar' {'baz' 33}}} 'foo') 'bar')", {'baz': 33}],
     ["(put {} 'foo' 1)", {'foo': 1}],

@@ -118,6 +118,7 @@ class HexpApp(App):
         prog = f.read()
         print(prog)
         exprs = prog.split("\n\n")
+        self.session.default_init()
         for expr in exprs:
             if len(expr.strip()) > 0:
                 self.session.evaluate(expr)

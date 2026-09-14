@@ -41,9 +41,9 @@
 ;; defining `hexp-init`, it will be called once, before the first `hexp-update` or `hexp-draw`. it returns the `state` map
 (def hexp-init
   (fn ()
-    {'pos'    (0 40)
-     'vel'    (3 3)
-     'colour' '#ff0000'}))
+    {'pos'    (list 0 40)
+     'vel'    (list 3 3)
+     'colour' (rand-nth colours)}))
 
 ;; defining `hexp-update`, it will be called every frame
 (def hexp-update

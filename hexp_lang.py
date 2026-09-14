@@ -260,14 +260,18 @@ def evaluate(expr, env, ctx=None):
 
         if op == "eval":
             expr, env = work
+
+            if isinstance(expr, dict):
+                stack.append(("map", [env, {}, list(expr.items()), 0]))
             
-            if is_atom(expr):
+            elif is_atom(expr):
                 # lookup a symbol in the environment
                 if is_symbol(expr):
                     result = (env[expr.name], env)
                 else:
                     # a literal value
                     result = (expr, env)
+
             else:
                 f_exp, *arg_exprs = expr
                 
@@ -309,5 +313,22 @@ def evaluate(expr, env, ctx=None):
                     args.insert(0, ctx)
 
                 result = (f(*args), env)
+
+        elif op == "map":
+            env, result_map, items, item_index = work
+
+            if item_index < len(items):
+                key, value_expr = items[item_index]
+
+                stack.append(("map", [env, result_map, items, item_index + 1]))
+                stack.append(("map-value", [key, result_map]))
+                stack.append(("eval", [value_expr, env]))
+
+            else:
+                result = (result_map, env)
+
+        elif op == "map-value":
+            key, result_map = work
+            result_map[key] = result[0]
 
     return result
