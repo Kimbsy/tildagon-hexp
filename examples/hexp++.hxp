@@ -42,7 +42,5 @@
                         (hexp++ arg-exp env))
                       (rest e)))))))))))
 
-(hexp++ (quote ((fun (n) (+ n 1)) 21)) initial)
-(hexp++ (quote (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 (+ 9 (+ 1 (+ 2 (+ 3 (+ 4 (+ 5 (+ 6 (+ 7 (+ 8 9)))))))))))))))))) initial)
-
-;; severely limited in that special forms are implemented with recursive calls to evaluate in hexp
+;; (hexp++ (quote (+ 1 2 3)) initial)
+;; (hexp++ (quote ((fun (n) (+ n 1)) 21)) initial)

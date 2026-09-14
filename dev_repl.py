@@ -12,33 +12,11 @@ session = Session(
     None
 )
 
+# For convenience you can list expression to be evaluated when the dev
+# REPL starts.
 init = [
-    "(def empty (fn (sym) 'NOT FOUND'))",
-    "(def extend (fn (env sym val) (fn (lookup-sym) (if (= lookup-sym sym) val (env lookup-sym)))))",
-    "(def initial (extend (extend (extend (extend empty (quote -) -) (quote *) *) (quote =) =) (quote +) +))",
-    """(def hexp++
-  (fn (e env)
-    (let (hexp++ recur)
-      (if (not (coll? e))
-        (if (symbol? e)
-          (env e)
-          e)
-        (let (head (first e)
-                   tail (rest e))
-          (if (= head (quote quote))
-            (nth e 1)
-            (if (= head (quote if))
-              (if (recur (nth e 1) env)
-                (hexp++ (nth e 2) env)
-                (hexp++ (nth e 3) env))
-              (if (= head (quote fun))
-                (fn (val)
-                  (hexp++ (nth e 2) (extend env (first (nth e 1)) val)))
-                (apply
-                 (hexp++ (first e) env)
-                 (map (fn (arg-exp)
-                        (hexp++ arg-exp env))
-                      (rest e)))))))))))"""
+    "(def foo 42)",
+    "(def bar 67)",
 ]
 
 for expr in init:

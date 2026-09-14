@@ -9,7 +9,7 @@ A couple of things:
 - I do much care for Lisps
 - Implementing tiny languages is a fun coding problem, and a great learning opportunity
 
-So I've written a new language called `Hexp` which runs on the badge (it's an interpreted language running in MicroPython inside the `Hexp IDE` badge app).
+So I've written a new language called `Hexp` which runs on the badge (it's an interpreted language running in MicroPython inside the `HexpLang` badge app).
 
 As far as I can tell it is the first full programming language written specifically for Tildagon OS :tada:
 
@@ -20,11 +20,13 @@ The simplest way to get writing Hexp is using the built-in REPL of the Hexp IDE 
 From here you can evaluate Hexp expressions in an interactive session.
 
 ```Clojure
+;; comments start with ;;
+
 ;; numbers evaluate to themselves
 42
 => 42
 
-;; so do strings
+;; so do strings (single quotes)
 'hello'
 => hello
 
@@ -39,9 +41,54 @@ From here you can evaluate Hexp expressions in an interactive session.
 ;; variables evaluate to their values
 foo
 => 67
+
+;; bind lexically-scoped variables with `let`
+(let (a 1
+      b 2
+      c (+ a b))
+  (list a b c))
+=> [1, 2, 3]
+
+;; create a function with `fn`
+(def inc (fn (n) (+ n 1)))
+=> <closure ... >
+(inc 68)
+=> 69
 ```
 
 ## Saving and loading programs
+
+After evaluating code in the REPL you can exit to the main menu with the `F` button (your REPL state is safe until a reboot), then select `Save program` to write the session to the Tildagon's filesystem.
+
+> [!NOTE]
+> Currently a random number will be used for the filename, sorry
+
+From the main menu you can also select `Load program` to load a previously saved program into the REPL.
+
+Saving again will contain the whole history of the session (including any loaded programs).
+
+You can also sideload a program onto the Tildagon by copying it directly into the pogram store directory:
+
+``` shell
+mpremote mkdir apps/Kimbsy_tildagon_hexp/prog
+mpremote cp my-program.hxp :/apps/Kimbsy_tildagon_hexp/prog/
+```
+
+Take a look at the [example programs](/examples).
+
+> [!NOTE]
+> Make sure your program file ends with the `.hxp` Hexp file extension so it is recognised by the Hexp program loader
+
+## Writing programs in Hexp
+
+When writing a Hexp program, make sure that each top-level expression is separated by an empty line, also make sure that there are no empty lines inside an expression (comment lines are ok though). This is basically because I wrote a pretty crappy program loader :sweat_smile:
+
+As a general tip, try and keep functions small and reuse them, partly because this is good Lisp style, but also because the recursion used by special forms like `fn`, `let`, `if` eventually exhaust the MicroPython call stack.
+
+> [!IMPORTANT]
+> Did you know that the MicroPython recursion limit is 17? _SEVENTEEN_??? S.E.V.E.N.T.E.E.N. Almost all of the complexity in writing Hexp is in order to get around this.
+
+The full list of functions available to you in Hexp (not including the ones you write yourself!) is declared in `INIT_ENV` in [hexp_core.py](hexp_core.py)
 
 ## Writing a Tildagon OS badge app in Hexp
 
@@ -51,9 +98,16 @@ If you write a program which defines the `hexp-update` and `hexp-draw` functions
 
 So as soon as your program is evaluated Hexp will be able to draw to the screen and update it's own internal state every frame.
 
+Currently there are functions for drawing/filling triangles/rectangles and drawing text.
+
 I don't think we'll be running Doom anytime soon, but a bouncing DVD logo? That's absolutely achievable.
 
-Check out the `examples/*.hxp` programs (type it into the repl if you like!) for an example.
+Check out the following example programs:
+
+- draw-text.hxp : draws text to the screen
+- draw-tri.hxp : draws triangles to the screen
+- updating state : draws squares to the screen, updates their positions each frame
+- dvd-demo.hxp : I did it! the Bouncing DVD logo of your 90s nostaglia dreams is here on the badge, running entirely in Hexp.
 
 ## Setup and run on badge for local development
 
@@ -92,6 +146,3 @@ mpremote cp examples/*.hxp :/apps/Kimbsy_tildagon_hexp/prog/
 ```
 
 `ctrl-d` to reboot while connected
-
-> [!CAUTION]
-> Note to self: Update app version in `tildagon.toml` before we make a release!
