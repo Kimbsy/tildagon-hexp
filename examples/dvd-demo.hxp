@@ -1,9 +1,3 @@
-;; the position of the logo
-(def pos (list 0 40))
-
-;; the velocity of the logo
-(def vel (list 3 3))
-
 ;; nice bright colours
 (def colours
   (list '#ff0000'
@@ -13,8 +7,7 @@
         '#ff00ff'
         '#00ffff'))
 
-(def colour (rand-nth colours))
-
+;; collision radius for logo
 (def r 100)
 
 ;; add two vectors together
@@ -27,35 +20,62 @@
       (list (+ x1 x2)
             (+ y1 y2)))))
 
+;; returns the updated x velocity and whether to change colour
 (def update-vx
-  (fn (vx)
+  (fn (vx pos vel)
     (if (or (< r (first pos))
             (< (first pos) (- r)))
       (let (vx (- (first vel)))
-        (def colour (rand-nth colours))
-        vx)
-      (first vel))))
+        (list vx true))
+      (list (first vel) false))))
 
+;; returns the updated y velocity and whether to change colour
 (def update-vy
-  (fn (vy)
+  (fn (vy pos vel)
     (if (or (< r (last pos))
             (< (last pos) (- r)))
       (let (vy  (- (last vel)))
-        (def colour (rand-nth colours))
-        vy)
-      (last vel))))
+        (list vy true))
+      (list (last vel) false))))
+
+;; defining `hexp-init`, it will be called once, before the first `hexp-update` or `hexp-draw`. it returns the `state` map
+(def hexp-init
+  (fn ()
+    {'pos'    (0 40)
+     'vel'    (3 3)
+     'colour' '#ff0000'}))
 
 ;; defining `hexp-update`, it will be called every frame
 (def hexp-update
-  (fn ()
-    (def pos (add-v pos vel))
-    (def vel (list (update-vx (first vel))
-                   (update-vy (last vel))))))
+  (fn (state)
+    (let (pos (get state 'pos')
+          vel (get state 'vel')
+          colour (get state 'colour')
+          vx-res (update-vx (first vel) pos vel)
+          vy-res (update-vy (last vel) pos vel)
+          new-vx (first vx-res)
+          new-vy (first vy-res)
+          new-vel (list new-vx new-vy)
+          new-pos (add-v pos new-vel)
+          change-colour? (or (last vx-res)
+                             (last vy-res))
+          new-colour (if change-colour?
+                       (rand-nth colours)
+                       colour))
+      (put
+       (put
+        (put
+         state
+         'vel' new-vel)
+        'pos' new-pos)
+       'colour' new-colour))))
 
 ;; defining `hexp-draw`, will be called every frame
 (def hexp-draw
-  (fn ()
-    ;; set the background to a dark blue
-    (background '#002b36')
-    ;; draw the DVD logo in the current colour
-    (draw-text pos 'DVD' colour)))
+  (fn (state)
+    (let (pos (get state 'pos')
+          colour (get state 'colour'))
+      ;; set the background to a dark blue
+      (background '#002b36')
+      ;; draw the DVD logo in the current colour
+      (draw-text pos 'DVD' colour))))

@@ -27,12 +27,20 @@ class Session:
     def current_env(self):
         return self.env
 
+    # allow the user defined program a hook to initialise the ongoing hexp state
+    def prog_init(self):
+        f = self.env['hexp-init']
+        if f:
+            self.evaluate("(def hexp-state (hexp-init))", append_history=False)
+        else:
+            self.evaluate("(def hexp-state {})", append_history=False)
+
     def update(self):
         f = self.env['hexp-update']
         if f:
-            self.evaluate("(hexp-update)", append_history=False)
+            self.evaluate("(hexp-update hexp-state)", append_history=False)
 
     def draw(self):
         f = self.env['hexp-draw']
         if f:
-            self.evaluate("(hexp-draw)", append_history=False)
+            self.evaluate("(hexp-draw hexp-state)", append_history=False)

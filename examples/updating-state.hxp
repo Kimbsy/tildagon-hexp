@@ -1,21 +1,27 @@
-;; the position of the squares
-(def x 0)
-
 ;; an increment function
 (def inc (fn (n) (+ n 1)))
+
+;; defining `hexp-init`, it will be called once, before the first `hexp-update` or `hexp-draw`. it returns the `state` map
+(def hexp-init
+  (fn ()
+    ;; the position of the squares
+    {'x' 0}))
 
 ;; defining `hexp-update`, it will be called every frame
 (def hexp-update
   ;; we increment x and if it goes off the screen we put it back to the other side
-  (fn ()
-    (if (< x 120)
-      (def x (inc x))
-      ;; @TODO: support negative numbers literals!
-      (def x (- 120)))))
+  (fn (state)
+    (let (x (get state 'x'))
+      (if (< x 120)
+        (put state 'x' (inc x))
+        ;; @TODO: support negative numbers literals!
+        (put state 'x' (- 120))))))
 
 ;; defining `hexp-draw`, will be called every frame
 (def hexp-draw
-  (fn ()
-    ;; draw magenta squares based on the `x` coordinate
-    (draw-rect (list x 0) (list 30 30) '#ff00ff')
-    (fill-rect (list (- x) 0) (list 30 30) '#ff00ff')))
+  (fn (state)
+    (let (x (get state 'x'))
+      (print x)
+      ;; draw magenta squares based on the `x` coordinate
+      (draw-rect (list x 0) (list 30 30) '#ff00ff')
+      (fill-rect (list (- x) 0) (list 30 30) '#ff00ff'))))

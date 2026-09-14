@@ -121,6 +121,7 @@ class HexpApp(App):
         for expr in exprs:
             if len(expr.strip()) > 0:
                 self.session.evaluate(expr)
+        self.session.prog_init()
         self.notification = Notification("Loaded: " + item)
         # Don't emit a positive emote, in case the program crashes immediately, it gets mixed up with the negative emote from a failed evaluate
         # eventbus.emit(EmotePositiveEvent())
