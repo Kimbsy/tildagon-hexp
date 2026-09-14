@@ -9,13 +9,15 @@ A couple of things:
 - I do much care for Lisps
 - Implementing tiny languages is a fun coding problem, and a great learning opportunity
 
-So I've written a new language called `Hexp` which runs on the badge (it's an interpreted language running in MicroPython inside the `HexpLang` badge app).
+Also you gave us a gosh-darned _keyboard_ for the thing, what was I supposed to do? _Not write a programming language_???
+
+So I've written a language called `Hexp` which runs on the badge (it's an interpreted language running in MicroPython inside the `HexpLang` badge app).
 
 As far as I can tell it is the first full programming language written specifically for Tildagon OS :tada:
 
 ## The Hexp REPL
 
-The simplest way to get writing Hexp is using the built-in REPL of the Hexp IDE app. Luanch the IDE app and select REPL from the main menu.
+The simplest way to get writing Hexp is using the built-in REPL of the HexpLang app. Launch the app and select REPL from the main menu.
 
 From here you can evaluate Hexp expressions in an interactive session.
 
@@ -108,6 +110,20 @@ Check out the following example programs:
 - draw-tri.hxp : draws triangles to the screen
 - updating state : draws squares to the screen, updates their positions each frame
 - dvd-demo.hxp : I did it! the Bouncing DVD logo of your 90s nostaglia dreams is here on the badge, running entirely in Hexp.
+
+## Contributing to Hexp
+
+If you have any idea for ways in which Hexp can be improved (if such a thing is even _possible_) issues and pull requests on this repo are more than welcome :heart:
+
+If you run into any of the _completely incomprehensible_ errors that Hexp throws when something goes wrong (this happens a lot) feel free to raise an issue with your error and the code that threw it, I'll do my best to help out. For this reason it's very helpful to have a laptop connected to you Tildagon while doing intense Hexp development, and connecting with:
+
+``` shell
+mpremote connect auto
+```
+
+That way you can copy from the terminal which will show the current input as well as the error stack trace.
+
+Example programs (even trivial ones) are more than welcome.
 
 ## Setup and run on badge for local development
 
